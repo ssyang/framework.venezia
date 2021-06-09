@@ -1,46 +1,41 @@
 #pragma once
 
+#include <Eigen/Dense>
+
 namespace _venezia
 {
     /**
-     * @brief ths base teplate class of all variable 
+     * @brief ths base class of all variable 
      * 
      */
-    template <class _T>
     class c_variable
     {
         public:
         c_variable(){}
-        c_variable( const _T & data)
+        c_variable( const Eigen::MatrixXd & matrix_data )
         {
-            m_data = data;
+            m_matrix_data = matrix_data;
         }
 
-        void set(const _T data)
+        void set(const Eigen::MatrixXd & matrix_data)
         {
-            m_data = data;
+            m_matrix_data = matrix_data;
         }
 
-        _T get() const
+        Eigen::MatrixXd get() const
         {
-            return m_data;
+            return m_matrix_data;
         }
 
-        _T operator()() const
+        Eigen::MatrixXd operator()() const
         {
-            return m_data;
+            return m_matrix_data;
         }
 
         c_variable& operator+=(const c_variable& rhs) // compound assignment (does not need to be a member,
         {                           // but often is, to modify the private members)
             /* addition of rhs to *this takes place here */
-            m_data += rhs.get();
-            return *this; // return the result by reference
-        }
-        c_variable& operator+=(const double& rhs) // compound assignment (does not need to be a member,
-        {                           // but often is, to modify the private members)
-            /* addition of rhs to *this takes place here */
-            m_data += rhs;
+            m_matrix_data += rhs.get();
             return *this; // return the result by reference
         }
 
@@ -52,16 +47,8 @@ namespace _venezia
             lhs += rhs; // reuse compound assignment
             return lhs; // return the result by value (uses move constructor)
         }
-        friend c_variable operator+(
-            c_variable lhs,        // passing lhs by value helps optimize chained a+b+c
-            const double& rhs// otherwise, both parameters may be const references
-        )
-        {
-            lhs += rhs; // reuse compound assignment
-            return lhs; // return the result by value (uses move constructor)
-        }
 
         private:
-        _T m_data;
+            Eigen::MatrixXd m_matrix_data;
     };
 }

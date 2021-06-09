@@ -9,19 +9,18 @@ namespace _venezia
      * this is virtual class
      * 
      */
-    template <class _T>    
     class c_function
     {
         public:
-            _venezia::c_variable<_T> operator()(const _venezia::c_variable<_T> & in_variable )
+            _venezia::c_variable operator()(const _venezia::c_variable & in_variable )
             {
-                _T x(in_variable.get());
-                _T y = _forward(x);
-                return  _venezia::c_variable<_T>(y);
+                Eigen::MatrixXd x(in_variable.get());
+                Eigen::MatrixXd y = _forward(x);
+                return  _venezia::c_variable(y);
             }
 
         protected:
-            virtual _T _forward(const _T & data) = 0;
+            virtual Eigen::MatrixXd _forward(const Eigen::MatrixXd & data) = 0;
 
     };
 }
