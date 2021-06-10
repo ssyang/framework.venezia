@@ -10,7 +10,9 @@
                 "-o",
                 "${workspaceFolder}\\x64\\debug\\t1.exe",
                 "-I",
-                "${workspaceFolder}\\venezia"                
+                "${workspaceFolder}\\venezia",
+                "-I",
+                "C:/local/eigen-3.3.9"
             ],
             "options": {
                 "cwd": "${fileDirname}"

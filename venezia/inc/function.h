@@ -11,9 +11,13 @@ namespace _venezia
      * 
      */
 
-    template<class _T> 
-    _T numerical_differentiation( _venezia::c_function & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
+    Eigen::MatrixXd numerical_differentiation( _venezia::c_function & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
     {
+        Eigen::MatrixXd mx_out;
+        Eigen::MatrixXd mx_eps(var);
+
+        mx_eps = d_eps;
+
         _venezia::c_variable x0(var.get()-d_eps);
         _venezia::c_variable x1(var.get()+d_eps);
 
