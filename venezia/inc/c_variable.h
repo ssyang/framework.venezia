@@ -17,6 +17,8 @@ namespace _venezia
             m_matrix_data = matrix_data;
         }
 
+        ~c_variable(){}
+
         void set(const Eigen::MatrixXd & matrix_data)
         {
             m_matrix_data = matrix_data;
@@ -32,20 +34,108 @@ namespace _venezia
             return m_matrix_data;
         }
 
-        c_variable& operator+=(const c_variable& rhs) // compound assignment (does not need to be a member,
-        {                           // but often is, to modify the private members)
-            /* addition of rhs to *this takes place here */
+        c_variable& operator+=(const c_variable& rhs)
+        {
             m_matrix_data += rhs.get();
-            return *this; // return the result by reference
+            return *this;
         }
 
-        friend c_variable operator+(
-            c_variable lhs,        // passing lhs by value helps optimize chained a+b+c
-            const c_variable& rhs// otherwise, both parameters may be const references
-        )
+        friend c_variable operator+( c_variable lhs, const c_variable& rhs )
         {
-            lhs += rhs; // reuse compound assignment
-            return lhs; // return the result by value (uses move constructor)
+            lhs += rhs;
+            return lhs;
+        }
+
+        c_variable& operator-=(const c_variable& rhs)
+        {
+            m_matrix_data -= rhs.get();
+            return *this;
+        }
+
+        friend c_variable operator-( c_variable lhs, const c_variable& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+
+        c_variable& operator*=(const c_variable& rhs)
+        {
+            m_matrix_data *= rhs.get();
+            return *this;
+        }
+
+        friend c_variable operator*( c_variable lhs, const c_variable& rhs )
+        {
+            lhs *= rhs;
+            return lhs;
+        }
+
+        /*
+        * scala operator
+        */
+       //int
+        c_variable& operator*=(const int& rhs)
+        {
+            m_matrix_data *= rhs;
+            return *this;
+        }
+        friend c_variable operator*( c_variable lhs, const int& rhs )
+        {
+            lhs *= rhs;
+            return lhs;
+        }
+        friend c_variable operator*( const int& lhs, c_variable rhs )
+        {
+            rhs *= lhs;
+            return rhs;
+        }
+        //long
+        c_variable& operator*=(const long& rhs)
+        {
+            m_matrix_data *= rhs;
+            return *this;
+        }
+        friend c_variable operator*( c_variable lhs, const long& rhs )
+        {
+            lhs *= rhs;
+            return lhs;
+        }
+        friend c_variable operator*( const long& lhs, c_variable rhs )
+        {
+            rhs *= lhs;
+            return rhs;
+        }
+        //float
+        c_variable& operator*=(const float& rhs)
+        {
+            m_matrix_data *= rhs;
+            return *this;
+        }
+        friend c_variable operator*( c_variable lhs, const float& rhs )
+        {
+            lhs *= rhs;
+            return lhs;
+        }
+        friend c_variable operator*( const float& lhs, c_variable rhs )
+        {
+            rhs *= lhs;
+            return rhs;
+        }
+        //double
+        c_variable& operator*=(const double& rhs)
+        {
+            m_matrix_data *= rhs;
+            return *this;
+        }
+        friend c_variable operator*( c_variable lhs, const double& rhs )
+        {
+            lhs *= rhs;
+            return lhs;
+        }
+        friend c_variable operator*( const double& lhs, c_variable rhs )
+        {
+            rhs *= lhs;
+            return rhs;
         }
 
         private:

@@ -14,13 +14,12 @@ namespace _venezia
         public:
             _venezia::c_variable operator()(const _venezia::c_variable & in_variable )
             {
-                Eigen::MatrixXd x(in_variable.get());
-                Eigen::MatrixXd y = _forward(x);
-                return  _venezia::c_variable(y);
+                _venezia::c_variable y = _forward(in_variable);
+                return  y;
             }
 
         protected:
-            virtual Eigen::MatrixXd _forward(const Eigen::MatrixXd & data) = 0;
+            virtual _venezia::c_variable _forward(const _venezia::c_variable  & data) = 0;
 
     };
 }
