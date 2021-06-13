@@ -2,6 +2,8 @@
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 
+#include <cmath>
+
 #include <inc/c_variable.h>
 #include <inc/c_function.h>
 #include <inc/function.h>
@@ -70,12 +72,45 @@ void _test_matrix()
 
 class csqure : public _venezia::c_function
 {
-
+    public:
+        csqure() : _venezia::c_function(){}
     protected:
     _venezia::c_variable _forward(const _venezia::c_variable & data)
     {
         //return data*data;
         return data*data;
+    }
+};
+
+class cdouble : public _venezia::c_function
+{
+    public:
+        cdouble() : _venezia::c_function(){}
+    protected:
+    _venezia::c_variable _forward(const _venezia::c_variable & data)
+    {
+        //return data*data;
+        return data*2;
+    }
+};
+
+class cexp : public _venezia::c_function
+{
+    public:
+        cexp() : _venezia::c_function(){}
+    protected:
+    _venezia::c_variable _forward(const _venezia::c_variable & data)
+    {
+        _venezia::c_variable result(data);
+
+        _venezia::c_variable::type_size mt_size(result.size());
+
+        for( size_t i = 0; i<mt_size.first; i++){
+            for( size_t j = 0; j<mt_size.second; j++){
+                result.set(i,j, exp(data.get()(i,j)) );
+            }
+        }
+        return result;
     }
 };
 
@@ -154,6 +189,45 @@ void _test_numerical_differentiation()
     std::cout << diff() << std::endl;
 }
 
+void _test_composite_function()
+{
+    cdouble F1, F2, F3;
+
+    Eigen::MatrixXd k(1,1);
+    k << 3;
+    _venezia::c_variable kv(k);
+    _venezia::c_function F4;
+    F2(F1);
+    F3(F2);
+    F4(F3);
+
+    _venezia::c_variable kv1,kv2,kv3;
+    kv1 = F1(kv);
+    std::cout << kv1.get() << std::endl;
+    
+    kv2 = F2(kv1);
+    std::cout << kv2.get() << std::endl;
+    
+    kv3 = F3(kv2);
+    std::cout << kv3.get() << std::endl;
+
+    std::cout << F4(kv).get() << std::endl;
+    /*
+    csqure A, C;
+    cexp B;
+    _venezia::c_function composite_f(C(B(A())));
+
+    Eigen::MatrixXd data(1,1);
+    data << 0.5;
+    _venezia::c_variable x(data);
+
+    _venezia::c_variable dy = _venezia::numerical_differentiation(composite_f,x);
+
+    std::cout << "dy=" << std::endl;
+    std::cout << dy() << std::endl;
+    */
+}
+
 int main()
 {
 
@@ -161,7 +235,8 @@ int main()
     //_test_matrix();
     //_test_function();
     //_test_mul();
-    _test_numerical_differentiation();
+    //_test_numerical_differentiation();
+    _test_composite_function();
 
     //
 

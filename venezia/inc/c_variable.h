@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include <Eigen/Dense>
 
 namespace _venezia
@@ -28,6 +30,56 @@ namespace _venezia
         {
             m_matrix_data = matrix_data;
         }
+
+        void set(size_t n_row, size_t n_col, int n_val)
+        {
+            do{
+                if( n_row >= m_matrix_data.rows()){
+                    continue;
+                }
+                if( n_col >= m_matrix_data.cols()){
+                    continue;
+                }
+                m_matrix_data(n_row,n_col) = n_val;
+            }while(false);
+        }
+        void set(size_t n_row, size_t n_col, long n_val)
+        {
+            do{
+                if( n_row >= m_matrix_data.rows()){
+                    continue;
+                }
+                if( n_col >= m_matrix_data.cols()){
+                    continue;
+                }
+                m_matrix_data(n_row,n_col) = n_val;
+            }while(false);
+        }
+        void set(size_t n_row, size_t n_col, float n_val)
+        {
+            do{
+                if( n_row >= m_matrix_data.rows()){
+                    continue;
+                }
+                if( n_col >= m_matrix_data.cols()){
+                    continue;
+                }
+                m_matrix_data(n_row,n_col) = n_val;
+            }while(false);
+        }
+        void set(size_t n_row, size_t n_col, double n_val)
+        {
+            do{
+                if( n_row >= m_matrix_data.rows()){
+                    continue;
+                }
+                if( n_col >= m_matrix_data.cols()){
+                    continue;
+                }
+                m_matrix_data(n_row,n_col) = n_val;
+            }while(false);
+        }
+
         Eigen::MatrixXd get() const
         {
             return m_matrix_data;
@@ -42,6 +94,13 @@ namespace _venezia
         {
             return m_b_last_error;
         }
+
+        typedef std::pair<size_t,size_t>    type_size;
+        c_variable::type_size size() const
+        {
+            return std::make_pair(m_matrix_data.rows(),m_matrix_data.cols());
+        }
+
 
         /*
         * matrix operators
