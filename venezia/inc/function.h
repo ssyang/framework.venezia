@@ -11,18 +11,17 @@ namespace _venezia
      * 
      */
 
-    Eigen::MatrixXd numerical_differentiation( _venezia::c_function & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
+    _venezia::c_variable numerical_differentiation( _venezia::c_function & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
     {
-        Eigen::MatrixXd mx_out;
-        Eigen::MatrixXd mx_eps(var);
+        _venezia::c_variable result;
 
-        mx_eps = d_eps;
-
-        _venezia::c_variable x0(var.get()-d_eps);
-        _venezia::c_variable x1(var.get()+d_eps);
+        _venezia::c_variable x0(var-d_eps);
+        _venezia::c_variable x1(var+d_eps);
 
         _venezia::c_variable y0(fun(x0));
         _venezia::c_variable y1(fun(x1));
-        return (y1.get()-y0.get())/(2.00*d_eps);
+
+        result = (y1.get()-y0.get())/(2.00*d_eps);
+        return result;
     }
 }

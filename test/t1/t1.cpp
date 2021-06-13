@@ -4,7 +4,7 @@
 
 #include <inc/c_variable.h>
 #include <inc/c_function.h>
-//#include <inc/function.h>
+#include <inc/function.h>
 
 
 void _test_matrix()
@@ -67,7 +67,6 @@ void _test_matrix()
     std::cout <<std::endl;
 
 }
-
 
 class csqure : public _venezia::c_function
 {
@@ -133,13 +132,36 @@ void _test_mul()
     }//end for
 }
 
+void _test_numerical_differentiation()
+{
+    Eigen::MatrixXd data23(2,3);
+    data23 << 1,2,3,4,5,6;
+
+    _venezia::c_variable a(data23);
+    
+    csqure fun_squre;
+    _venezia::c_variable b = fun_squre(a);
+    if(b.error()){
+        std::cout <<" fun_squre : error. " <<std::endl;
+    }
+    else{
+        std::cout <<" b = " << std::endl;
+        std::cout << b() <<std::endl;
+    }
+    //
+   _venezia::c_variable diff = _venezia::numerical_differentiation(fun_squre,a);
+    std::cout <<" numerical_differentiation " << std::endl;
+    std::cout << diff() << std::endl;
+}
+
 int main()
 {
 
     std::cout << "test t1 gogo." <<std::endl;
     //_test_matrix();
     //_test_function();
-    _test_mul();
+    //_test_mul();
+    _test_numerical_differentiation();
 
     //
 

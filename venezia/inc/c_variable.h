@@ -52,6 +52,7 @@ namespace _venezia
             m_b_last_error = rhs.m_b_last_error;
             return *this;
         }
+
         c_variable& operator=(const Eigen::MatrixXd& rhs)
         {
             m_matrix_data = rhs;
@@ -125,6 +126,47 @@ namespace _venezia
         * scala operator
         */
        //int
+        c_variable& operator=(const int& rhs)
+        {
+            m_matrix_data.fill(rhs);
+            return *this;
+        }
+        c_variable& operator+=(const int& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data += r;
+            return *this;
+        }
+        friend c_variable operator+( c_variable lhs, const int& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend c_variable operator+( const int& lhs, c_variable rhs )
+        {
+            rhs += lhs;
+            return rhs;
+        }
+
+        c_variable& operator-=(const int& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data -= r;
+            return *this;
+        }
+        friend c_variable operator-( c_variable lhs, const int& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+        friend c_variable operator-( const int& lhs, c_variable rhs )
+        {
+            rhs -= lhs;
+            return rhs;
+        }
+ 
         c_variable& operator*=(const int& rhs)
         {
             m_matrix_data *= rhs;
@@ -140,7 +182,65 @@ namespace _venezia
             rhs *= lhs;
             return rhs;
         }
+
+        c_variable& operator/=(const int& rhs)
+        {
+            m_matrix_data /= rhs;
+            return *this;
+        }
+        friend c_variable operator/( c_variable lhs, const int& rhs )
+        {
+            lhs /= rhs;
+            return lhs;
+        }
+        friend c_variable operator/( const int& lhs, c_variable rhs )
+        {
+            rhs /= lhs;
+            return rhs;
+        }
+
         //long
+        c_variable& operator=(const long& rhs)
+        {
+            m_matrix_data.fill(rhs);
+            return *this;
+        }
+        c_variable& operator+=(const long& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data += r;
+            return *this;
+        }
+        friend c_variable operator+( c_variable lhs, const long& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend c_variable operator+( const long& lhs, c_variable rhs )
+        {
+            rhs += lhs;
+            return rhs;
+        }
+
+        c_variable& operator-=(const long& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data -= r;
+            return *this;
+        }
+        friend c_variable operator-( c_variable lhs, const long& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+        friend c_variable operator-( const long& lhs, c_variable rhs )
+        {
+            rhs -= lhs;
+            return rhs;
+        }
+ 
         c_variable& operator*=(const long& rhs)
         {
             m_matrix_data *= rhs;
@@ -156,7 +256,65 @@ namespace _venezia
             rhs *= lhs;
             return rhs;
         }
+
+        c_variable& operator/=(const long& rhs)
+        {
+            m_matrix_data /= rhs;
+            return *this;
+        }
+        friend c_variable operator/( c_variable lhs, const long& rhs )
+        {
+            lhs /= rhs;
+            return lhs;
+        }
+        friend c_variable operator/( const long& lhs, c_variable rhs )
+        {
+            rhs /= lhs;
+            return rhs;
+        }
+
         //float
+        c_variable& operator=(const float& rhs)
+        {
+            m_matrix_data.fill(rhs);
+            return *this;
+        }
+        c_variable& operator+=(const float& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data += r;
+            return *this;
+        }
+        friend c_variable operator+( c_variable lhs, const float& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend c_variable operator+( const float& lhs, c_variable rhs )
+        {
+            rhs += lhs;
+            return rhs;
+        }
+
+        c_variable& operator-=(const float& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data -= r;
+            return *this;
+        }
+        friend c_variable operator-( c_variable lhs, const float& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+        friend c_variable operator-( const float& lhs, c_variable rhs )
+        {
+            rhs -= lhs;
+            return rhs;
+        }
+ 
         c_variable& operator*=(const float& rhs)
         {
             m_matrix_data *= rhs;
@@ -172,7 +330,65 @@ namespace _venezia
             rhs *= lhs;
             return rhs;
         }
+
+        c_variable& operator/=(const float& rhs)
+        {
+            m_matrix_data /= rhs;
+            return *this;
+        }
+        friend c_variable operator/( c_variable lhs, const float& rhs )
+        {
+            lhs /= rhs;
+            return lhs;
+        }
+        friend c_variable operator/( const float& lhs, c_variable rhs )
+        {
+            rhs /= lhs;
+            return rhs;
+        }
+
         //double
+        c_variable& operator=(const double& rhs)
+        {
+            m_matrix_data.fill(rhs);
+            return *this;
+        }
+        c_variable& operator+=(const double& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data += r;
+            return *this;
+        }
+        friend c_variable operator+( c_variable lhs, const double& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend c_variable operator+( const double& lhs, c_variable rhs )
+        {
+            rhs += lhs;
+            return rhs;
+        }
+
+        c_variable& operator-=(const double& rhs)
+        {
+            Eigen::MatrixXd r(m_matrix_data);
+            r.fill(rhs);
+            m_matrix_data -= r;
+            return *this;
+        }
+        friend c_variable operator-( c_variable lhs, const double& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+        friend c_variable operator-( const double& lhs, c_variable rhs )
+        {
+            rhs -= lhs;
+            return rhs;
+        }
+ 
         c_variable& operator*=(const double& rhs)
         {
             m_matrix_data *= rhs;
@@ -186,6 +402,22 @@ namespace _venezia
         friend c_variable operator*( const double& lhs, c_variable rhs )
         {
             rhs *= lhs;
+            return rhs;
+        }
+
+        c_variable& operator/=(const double& rhs)
+        {
+            m_matrix_data /= rhs;
+            return *this;
+        }
+        friend c_variable operator/( c_variable lhs, const double& rhs )
+        {
+            lhs /= rhs;
+            return lhs;
+        }
+        friend c_variable operator/( const double& lhs, c_variable rhs )
+        {
+            rhs /= lhs;
             return rhs;
         }
 
