@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+#include <list>
 
 #include <inc/c_variable.h>
 
@@ -12,57 +14,66 @@ namespace _venezia
     class c_function
     {
         public:
-            c_function() : m_p_back_fun(nullptr), m_p_front_fun(nullptr)
+            typedef std::shared_ptr<c_function>     type_ptr_c_function;
+            typedef std::list<type_ptr_c_function>  type_list_ptr_c_function;
+            typedef std::shared_ptr<type_list_ptr_c_function> type_ptr_list_ptr_c_function;
+
+        public:
+            c_function()
             {}
 
             c_function( const c_function & f)
             {
                 *this = f;
             }
+
+
             _venezia::c_variable operator()(const _venezia::c_variable & in_variable )
             {
-                c_function *p_root_fun(nullptr);
-                c_function *p_back_fun(m_p_back_fun);
+                _venezia::c_variable out_var;
+                do{
+                    if(!m_ptr_list_ptr_override_fun){
+                        out_var = _default_forward(in_variable);
+                        continue;
+                    }
+                    if(m_ptr_list_ptr_override_fun->empty()){
+                        out_var = _default_forward(in_variable);
+                        continue;
+                    }
 
-                while(p_back_fun != nullptr){
-                    p_root_fun = p_back_fun;
-                    p_back_fun = p_back_fun->m_p_back_fun;
-                }//end while
+                    out_var = in_variable;
+                    std::for_each( m_ptr_list_ptr_override_fun->begin(),m_ptr_list_ptr_override_fun->end(),[&](type_ptr_c_function &ptr_fun){
+                        out_var = (*ptr_fun)(out_var);
+                    });
 
-                _venezia::c_variable y(in_variable);
-                if(p_root_fun == nullptr){
-                    y = _forward(y);
-                }
-                else{
 
-                    do{
-                        y = p_root_fun->_forward(y);
-                        p_root_fun = p_root_fun->m_p_front_fun;
-                    }while(p_root_fun != this);
-                    y = _forward(y);
-                }
-
-                return  y;
+                }while(false);
+                return  out_var;
             }
-            _venezia::c_function& operator()( c_function & f)
+
+            type_ptr_list_ptr_c_function& operator()( type_ptr_list_ptr_c_function & list_ptr_fun)
             {
-                m_p_back_fun = &f;
-                f.m_p_front_fun = this;
-                return *this;
+                do{
+
+                }while(false);
+                return list_ptr_fun;
             }
-            _venezia::c_function& operator()()
+            type_ptr_list_ptr_c_function operator()()
             {
-                return *this;
+                type_ptr_list_ptr_c_function ptr_list_ptr_c_function( new type_list_ptr_c_function() );
+                //type_ptr_c_function ptr_c_function( new c_function() );
+                type_ptr_c_function ptr_c_function( new c_function() );
+                ptr_list_ptr_c_function->push_back(ptr_c_function);
+                return ptr_list_ptr_c_function;
             }
 
 
         protected:
-            virtual _venezia::c_variable _forward(const _venezia::c_variable  & data)
+            virtual _venezia::c_variable _default_forward(const _venezia::c_variable  & data)
             {
                 return data;
             }
         protected:
-            c_function *m_p_back_fun;
-            c_function *m_p_front_fun;
+            type_ptr_list_ptr_c_function m_ptr_list_ptr_override_fun;
     };
 }
