@@ -11,6 +11,7 @@ namespace _venezia
      * this is virtual class
      * 
      */
+    template <class T>
     class c_function
     {
         public:
@@ -24,9 +25,19 @@ namespace _venezia
 
             c_function( const c_function & f)
             {
-                *this = f;
+                m_ptr_list_ptr_override_fun = f.m_ptr_list_ptr_override_fun;
             }
 
+            c_function & operator=(const c_function & f)
+            {
+                m_ptr_list_ptr_override_fun = f.m_ptr_list_ptr_override_fun;
+                return *this;
+            }
+            c_function & operator=(const type_ptr_list_ptr_c_function & list_ptr_fun)
+            {
+                m_ptr_list_ptr_override_fun = list_ptr_fun;
+                return *this;
+            }
 
             _venezia::c_variable operator()(const _venezia::c_variable & in_variable )
             {
@@ -51,28 +62,27 @@ namespace _venezia
                 return  out_var;
             }
 
-            type_ptr_list_ptr_c_function& operator()( type_ptr_list_ptr_c_function & list_ptr_fun)
+            type_ptr_list_ptr_c_function operator()( const type_ptr_list_ptr_c_function & ptr_list_ptr_fun)
             {
-                do{
+                type_ptr_list_ptr_c_function ptr_list_ptr_c_function=ptr_list_ptr_fun;
 
-                }while(false);
-                return list_ptr_fun;
+                if(!ptr_list_ptr_c_function){
+                    ptr_list_ptr_c_function = type_ptr_list_ptr_c_function( new type_list_ptr_c_function() );
+                }
+                type_ptr_c_function ptr_c_function( new T() );
+                ptr_list_ptr_c_function->push_back(ptr_c_function);
+                return ptr_list_ptr_c_function;
             }
             type_ptr_list_ptr_c_function operator()()
             {
                 type_ptr_list_ptr_c_function ptr_list_ptr_c_function( new type_list_ptr_c_function() );
-                //type_ptr_c_function ptr_c_function( new c_function() );
-                type_ptr_c_function ptr_c_function( new c_function() );
+                type_ptr_c_function ptr_c_function( new T() );
                 ptr_list_ptr_c_function->push_back(ptr_c_function);
                 return ptr_list_ptr_c_function;
             }
 
-
         protected:
-            virtual _venezia::c_variable _default_forward(const _venezia::c_variable  & data)
-            {
-                return data;
-            }
+            virtual _venezia::c_variable _default_forward(const _venezia::c_variable  & data) = 0;
         protected:
             type_ptr_list_ptr_c_function m_ptr_list_ptr_override_fun;
     };

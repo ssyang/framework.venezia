@@ -71,36 +71,37 @@ void _test_matrix()
 
 }
 
-class csqure : public _venezia::c_function
+class cgeneric : public _venezia::c_function<cgeneric>
 {
-    public:
-        csqure() : _venezia::c_function(){}
     protected:
-    _venezia::c_variable _forward(const _venezia::c_variable & data)
+    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
-        //return data*data;
-        return data*data;
+        return data;
     }
 };
 
-class cdouble : public _venezia::c_function
+class cdouble : public _venezia::c_function<cdouble>
 {
-    public:
-        cdouble() : _venezia::c_function(){}
     protected:
-    _venezia::c_variable _forward(const _venezia::c_variable & data)
+    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
-        //return data*data;
         return data*2;
     }
 };
 
-class cexp : public _venezia::c_function
+class csqure : public _venezia::c_function<csqure>
 {
-    public:
-        cexp() : _venezia::c_function(){}
     protected:
-    _venezia::c_variable _forward(const _venezia::c_variable & data)
+    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
+    {
+        return data*data;
+    }
+};
+
+class cexp : public _venezia::c_function<cexp>
+{
+    protected:
+    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
         _venezia::c_variable result(data);
 
@@ -197,10 +198,9 @@ void _test_composite_function()
     Eigen::MatrixXd k(1,1);
     k << 3;
     _venezia::c_variable kv(k);
-    _venezia::c_function F4;
-    F2(F1);
-    F3(F2);
-    F4(F3);
+    cgeneric F4;
+
+    F4 = F3();
 
     if( typeid(F1) == typeid(F2) ){
         std::cout << "F1 == F2" << std::endl;
@@ -208,7 +208,7 @@ void _test_composite_function()
     else{
         std::cout << "F1 != F2" << std::endl;
     }
-    if( typeid(_venezia::c_function) == typeid(F2) ){
+    if( typeid(F1) == typeid(F2) ){
         std::cout << "F1 == F4" << std::endl;
     }
     else{
