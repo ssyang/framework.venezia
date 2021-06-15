@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
+#include <typeinfo>
 
 #include <cmath>
 
@@ -200,6 +201,19 @@ void _test_composite_function()
     F2(F1);
     F3(F2);
     F4(F3);
+
+    if( typeid(F1) == typeid(F2) ){
+        std::cout << "F1 == F2" << std::endl;
+    }
+    else{
+        std::cout << "F1 != F2" << std::endl;
+    }
+    if( typeid(_venezia::c_function) == typeid(F2) ){
+        std::cout << "F1 == F4" << std::endl;
+    }
+    else{
+        std::cout << "F1 != F4" << std::endl;
+    }
 
     _venezia::c_variable kv1,kv2,kv3;
     kv1 = F1(kv);
