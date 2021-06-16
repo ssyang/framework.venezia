@@ -200,7 +200,8 @@ void _test_composite_function()
     _venezia::c_variable kv(k);
     cgeneric F4;
 
-    F4 = F3();
+    _venezia::_c_function_::type_ptr_list_ptr_c_function_ ptr_list = F3();
+    F4 = ptr_list;
 
     if( typeid(F1) == typeid(F2) ){
         std::cout << "F1 == F2" << std::endl;

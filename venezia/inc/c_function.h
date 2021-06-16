@@ -20,6 +20,8 @@ namespace _venezia
             typedef std::list<type_ptr_c_function_>  type_list_ptr_c_function_;
             typedef std::shared_ptr<type_list_ptr_c_function_> type_ptr_list_ptr_c_function_;
 
+        
+            virtual _venezia::c_variable _forward(const _venezia::c_variable  & in_variable) = 0;
         protected:
             virtual _venezia::c_variable _default_forward(const _venezia::c_variable  & data) = 0;
 
@@ -34,6 +36,8 @@ namespace _venezia
     {
         public:
             c_function()
+            {}
+            virtual ~c_function()
             {}
 
             c_function( const c_function & f)
@@ -54,27 +58,7 @@ namespace _venezia
 
             _venezia::c_variable operator()(const _venezia::c_variable & in_variable )
             {
-                _venezia::c_variable out_var;
-                do{
-                    if(!m_ptr_list_ptr_override_fun){
-                        out_var = _default_forward(in_variable);
-                        continue;
-                    }
-                    if(m_ptr_list_ptr_override_fun->empty()){
-                        out_var = _default_forward(in_variable);
-                        continue;
-                    }
-
-                    out_var = in_variable;
-                    std::for_each( m_ptr_list_ptr_override_fun->begin(),m_ptr_list_ptr_override_fun->end(),[&](_c_function_::type_ptr_c_function_ &ptr_fun){
-                        if(ptr_fun){
-                            out_var = (*ptr_fun)(out_var);
-                        }
-                    });
-
-
-                }while(false);
-                return  out_var;
+                return _forward(in_variable);
             }
 
             _c_function_::type_ptr_list_ptr_c_function_ operator()( const _c_function_::type_ptr_list_ptr_c_function_ & ptr_list_ptr_fun)
@@ -96,6 +80,30 @@ namespace _venezia
                 return ptr_list_ptr_c_function;
             }
 
+            virtual _venezia::c_variable _forward(const _venezia::c_variable  & in_variable)
+            {
+                _venezia::c_variable out_var;
+                do{
+                    if(!m_ptr_list_ptr_override_fun){
+                        out_var = _default_forward(in_variable);
+                        continue;
+                    }
+                    if(m_ptr_list_ptr_override_fun->empty()){
+                        out_var = _default_forward(in_variable);
+                        continue;
+                    }
+
+                    out_var = in_variable;
+                    std::for_each( m_ptr_list_ptr_override_fun->begin(),m_ptr_list_ptr_override_fun->end(),[&](_c_function_::type_ptr_c_function_ &ptr_fun){
+                        if(ptr_fun){
+                            out_var = ptr_fun->_forward(out_var);
+                        }
+                    });
+
+
+                }while(false);
+                return  out_var;
+            }
         protected:
             virtual _venezia::c_variable _default_forward(const _venezia::c_variable  & data)
             {
