@@ -74,7 +74,7 @@ void _test_matrix()
 class cgeneric : public _venezia::c_function<cgeneric>
 {
     protected:
-    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
+    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
         return data;
     }
@@ -83,7 +83,7 @@ class cgeneric : public _venezia::c_function<cgeneric>
 class cdouble : public _venezia::c_function<cdouble>
 {
     protected:
-    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
+    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
         return data*2;
     }
@@ -92,7 +92,7 @@ class cdouble : public _venezia::c_function<cdouble>
 class csqure : public _venezia::c_function<csqure>
 {
     protected:
-    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
+    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
         return data*data;
     }
@@ -101,7 +101,7 @@ class csqure : public _venezia::c_function<csqure>
 class cexp : public _venezia::c_function<cexp>
 {
     protected:
-    _venezia::c_variable _default_forward(const _venezia::c_variable & data)
+    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
         _venezia::c_variable result(data);
 
@@ -124,6 +124,7 @@ void _test_function()
     _venezia::c_variable a(data23);
     
     csqure fun_squre;
+    _venezia::c_variable b = fun_squre(a);
     _venezia::c_variable b = fun_squre(a);
     if(b.error()){
         std::cout <<" fun_squre : error. " <<std::endl;
@@ -199,8 +200,11 @@ void _test_composite_function()
     k << 3;
     _venezia::c_variable kv(k);
     cgeneric F4;
+    csqure F5;
 
-    _venezia::_c_function_::type_ptr_list_ptr_c_function_ ptr_list = F3();
+    F4 = F5;
+
+    _venezia::_c_function_base::type_ptr_list_ptr_c_function_base ptr_list = F3();
     F4 = ptr_list;
 
     if( typeid(F1) == typeid(F2) ){
