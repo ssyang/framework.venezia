@@ -71,8 +71,12 @@ void _test_matrix()
 
 }
 
-class cgeneric : public _venezia::c_function<cgeneric>
+class cgeneric : public _venezia::c_fun<cgeneric>
 {
+    public:
+    using _venezia::c_fun_base::operator();
+    using _venezia::c_fun<cgeneric>::operator=;
+
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
@@ -80,8 +84,12 @@ class cgeneric : public _venezia::c_function<cgeneric>
     }
 };
 
-class cdouble : public _venezia::c_function<cdouble>
+//class cdouble : public _venezia::c_fun<cdouble>
+class cdouble : public _venezia::c_fun<cdouble>
 {
+    public:
+    using _venezia::c_fun_base::operator();
+    using _venezia::c_fun<cdouble>::operator=;
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
@@ -89,8 +97,11 @@ class cdouble : public _venezia::c_function<cdouble>
     }
 };
 
-class csqure : public _venezia::c_function<csqure>
+class csqure : public _venezia::c_fun<csqure>
 {
+    public:
+    using _venezia::c_fun_base::operator();
+    using _venezia::c_fun<csqure>::operator=;
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
@@ -98,8 +109,11 @@ class csqure : public _venezia::c_function<csqure>
     }
 };
 
-class cexp : public _venezia::c_function<cexp>
+class cexp : public _venezia::c_fun<cexp>
 {
+    public:
+    using _venezia::c_fun_base::operator();
+    using _venezia::c_fun<cexp>::operator=;
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
@@ -124,7 +138,6 @@ void _test_function()
     _venezia::c_variable a(data23);
     
     csqure fun_squre;
-    _venezia::c_variable b = fun_squre(a);
     _venezia::c_variable b = fun_squre(a);
     if(b.error()){
         std::cout <<" fun_squre : error. " <<std::endl;
@@ -187,7 +200,7 @@ void _test_numerical_differentiation()
         std::cout << b() <<std::endl;
     }
     //
-   _venezia::c_variable diff = _venezia::numerical_differentiation(fun_squre,a);
+   _venezia::c_variable diff = _venezia::numerical_differentiation<csqure>(fun_squre,a);
     std::cout <<" numerical_differentiation " << std::endl;
     std::cout << diff() << std::endl;
 }
@@ -195,46 +208,33 @@ void _test_numerical_differentiation()
 void _test_composite_function()
 {
     cdouble F1, F2, F3;
+    cgeneric F4,F5,F6;
 
     Eigen::MatrixXd k(1,1);
-    k << 3;
-    _venezia::c_variable kv(k);
-    cgeneric F4;
-    csqure F5;
+    k << 1;
+    _venezia::c_variable kv(k),kv_result;
 
-    F4 = F5;
+    F4 = F3();
+    F5 = F4(F3);
+    //_venezia::c_fun_base f=F3();
+    F6 = F5(F4);
 
-    _venezia::_c_function_base::type_ptr_list_ptr_c_function_base ptr_list = F3();
-    F4 = ptr_list;
-
-    if( typeid(F1) == typeid(F2) ){
-        std::cout << "F1 == F2" << std::endl;
-    }
-    else{
-        std::cout << "F1 != F2" << std::endl;
-    }
-    if( typeid(F1) == typeid(F2) ){
-        std::cout << "F1 == F4" << std::endl;
-    }
-    else{
-        std::cout << "F1 != F4" << std::endl;
-    }
-
-    _venezia::c_variable kv1,kv2,kv3;
-    kv1 = F1(kv);
-    std::cout << kv1.get() << std::endl;
+    kv_result = F3(kv);
+    std::cout << "F3 = " << kv_result.get() << std::endl;
     
-    kv2 = F2(kv1);
-    std::cout << kv2.get() << std::endl;
+    kv_result = F4(kv);
+    std::cout << "F4 = " <<kv_result.get() << std::endl;
     
-    kv3 = F3(kv2);
-    std::cout << kv3.get() << std::endl;
+    kv_result = F5(kv);
+    std::cout << "F5 = " <<kv_result.get() << std::endl;
 
-    std::cout << F4(kv).get() << std::endl;
+    kv_result = F6(kv);
+    std::cout << "F6 = " <<kv_result.get() << std::endl;
+
     /*
     csqure A, C;
     cexp B;
-    _venezia::c_function composite_f(C(B(A())));
+    _venezia::c_fun composite_f(C(B(A())));
 
     Eigen::MatrixXd data(1,1);
     data << 0.5;

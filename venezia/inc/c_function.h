@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <list>
+#include <string>
+#include <typeinfo>
 
 #include <inc/c_variable.h>
 
@@ -11,101 +13,93 @@ namespace _venezia
      * Don't use this class in external
      * 
      */
-
-    class _c_function_base
+    class c_fun_base
     {
         public:
-            typedef std::shared_ptr<_c_function_base>     type_ptr_c_function_base;
-            typedef std::list<type_ptr_c_function_base>  type_list_ptr_c_function_base;
-            typedef std::shared_ptr<type_list_ptr_c_function_base> type_ptr_list_ptr_c_function_base;
+            typedef std::shared_ptr<c_fun_base>     type_ptr;
 
         public:
-            _c_function_base()
+            c_fun_base()
             {}
-            virtual ~_c_function_base()
+            virtual ~c_fun_base()
             {}
 
-            _c_function_base( const _c_function_base & f)
+            c_fun_base( const c_fun_base & f)
             {
-                m_ptr_list_ptr_override_fun = f.m_ptr_list_ptr_override_fun;
+                m_list_ptr_override_fun = f.m_list_ptr_override_fun;
             }
 
-            _c_function_base & operator=(const _c_function_base & f)
-            {
-                m_ptr_list_ptr_override_fun = f.m_ptr_list_ptr_override_fun;
-                return *this;
-            }
-            
-            _c_function_base & operator=(const _c_function_base::type_ptr_list_ptr_c_function_base & list_ptr_fun)
-            {
-                m_ptr_list_ptr_override_fun = list_ptr_fun;
-                return *this;
-            }
-
-            virtual _venezia::c_variable operator()(const _venezia::c_variable & in_variable )
+            c_variable operator()(const c_variable & in_variable )
             {
                 return _forward(in_variable);
             }
 
-            virtual _venezia::c_variable _forward(const _venezia::c_variable  & in_variable)
+            c_fun_base operator()()
             {
-                _venezia::c_variable out_var;
+                return *_get_new_instance();
+            }
+            c_fun_base operator()( c_fun_base & f)
+            {
+                f.m_list_ptr_override_fun.push_back(_get_new_instance());
+                return f;
+            }
+
+        protected:
+            c_variable _forward(const c_variable  & in_variable)
+            {
+                c_variable out_var;
                 do{
-                    if(!m_ptr_list_ptr_override_fun){
-                        out_var = _default_forward(in_variable);
-                        continue;
-                    }
-                    if(m_ptr_list_ptr_override_fun->empty()){
+                    if(m_list_ptr_override_fun.empty()){
                         out_var = _default_forward(in_variable);
                         continue;
                     }
 
                     out_var = in_variable;
-                    std::for_each( m_ptr_list_ptr_override_fun->begin(),m_ptr_list_ptr_override_fun->end(),[&](_c_function_base::type_ptr_c_function_base &ptr_fun){
+                    std::for_each( m_list_ptr_override_fun.begin(),m_list_ptr_override_fun.end(),[&](c_fun_base::type_ptr &ptr_fun){
                         if(ptr_fun){
                             out_var = ptr_fun->_forward(out_var);
                         }
                     });
-
+                    out_var = _default_forward(out_var);
 
                 }while(false);
                 return  out_var;
             }
 
-        protected:
-            virtual _venezia::c_variable _default_forward(const _venezia::c_variable  & data) = 0;
+            virtual c_variable _default_forward(const c_variable  & data)
+            {
+                return data;
+            };
             
-        protected:
-            _c_function_base::type_ptr_list_ptr_c_function_base m_ptr_list_ptr_override_fun;
+            virtual type_ptr _get_new_instance()
+            {
+                type_ptr ptr_f(nullptr);
+                return ptr_f;
+            }
+        public:
+            std::list<c_fun_base::type_ptr> m_list_ptr_override_fun;
     };
 
-    /**
-     * @brief ths base class of all function 
-     * 
-     */
-    template <class T>
-    class c_function : public _c_function_base
+    template <typename  TT>
+    class c_fun : public c_fun_base
     {
         public:
-            _c_function_base::type_ptr_list_ptr_c_function_base operator()( const _c_function_base::type_ptr_list_ptr_c_function_base & ptr_list_ptr_fun)
+        virtual ~c_fun(){}
+        c_fun& operator=( const c_fun & f)
+        {
+            m_list_ptr_override_fun = f.m_list_ptr_override_fun;
+            return *this;
+        }
+        c_fun_base& operator=( const c_fun_base & f)
+        {
+            m_list_ptr_override_fun = f.m_list_ptr_override_fun;
+            return *this;
+        }
+        protected:
+            virtual type_ptr _get_new_instance()
             {
-                _c_function_base::type_ptr_list_ptr_c_function_base ptr_list_ptr_c_function=ptr_list_ptr_fun;
-
-                if(!ptr_list_ptr_c_function){
-                    ptr_list_ptr_c_function = _c_function_base::type_ptr_list_ptr_c_function_base( new _c_function_base::type_list_ptr_c_function_base() );
-                }
-                _c_function_base::type_ptr_c_function_base ptr_c_function( new T() );
-                ptr_list_ptr_c_function->push_back(ptr_c_function);
-                return ptr_list_ptr_c_function;
+                return c_fun_base::type_ptr( new TT() );
             }
-            _c_function_base::type_ptr_list_ptr_c_function_base operator()()
-            {
-                _c_function_base::type_ptr_list_ptr_c_function_base ptr_list_ptr_c_function( new _c_function_base::type_list_ptr_c_function_base() );
-                _c_function_base::type_ptr_c_function_base ptr_c_function( new T() );
-                ptr_list_ptr_c_function->push_back(ptr_c_function);
-                return ptr_list_ptr_c_function;
-            }
-
     };
 
 }

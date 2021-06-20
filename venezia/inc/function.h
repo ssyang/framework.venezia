@@ -11,8 +11,8 @@ namespace _venezia
      * 
      */
 
-    template <class T>
-    _venezia::c_variable numerical_differentiation( _venezia::c_function<T> & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
+    template <typename T>
+    _venezia::c_variable numerical_differentiation( T & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
     {
         _venezia::c_variable result;
 
