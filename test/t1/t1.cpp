@@ -74,7 +74,7 @@ void _test_matrix()
 class cgeneric : public _venezia::c_fun<cgeneric>
 {
     public:
-    using _venezia::c_fun_base::operator();
+    using _venezia::_c_fun_base::operator();
     using _venezia::c_fun<cgeneric>::operator=;
 
     protected:
@@ -88,7 +88,7 @@ class cgeneric : public _venezia::c_fun<cgeneric>
 class cdouble : public _venezia::c_fun<cdouble>
 {
     public:
-    using _venezia::c_fun_base::operator();
+    using _venezia::_c_fun_base::operator();
     using _venezia::c_fun<cdouble>::operator=;
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
@@ -101,7 +101,7 @@ class cdouble : public _venezia::c_fun<cdouble>
 class csqure : public _venezia::c_fun<csqure>
 {
     public:
-    using _venezia::c_fun_base::operator();
+    using _venezia::_c_fun_base::operator();
     using _venezia::c_fun<csqure>::operator=;
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
@@ -113,7 +113,7 @@ class csqure : public _venezia::c_fun<csqure>
 class cexp : public _venezia::c_fun<cexp>
 {
     public:
-    using _venezia::c_fun_base::operator();
+    using _venezia::_c_fun_base::operator();
     using _venezia::c_fun<cexp>::operator=;
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
