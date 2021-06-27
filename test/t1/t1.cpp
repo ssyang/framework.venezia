@@ -80,11 +80,11 @@ class cgeneric : public _venezia::c_fun<cgeneric>
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
+        std::cout << "[cgeneric]";
         return data;
     }
 };
 
-//class cdouble : public _venezia::c_fun<cdouble>
 class cdouble : public _venezia::c_fun<cdouble>
 {
     public:
@@ -93,6 +93,7 @@ class cdouble : public _venezia::c_fun<cdouble>
     protected:
     virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
     {
+        std::cout << "[cdouble]";
         return data*2;
     }
 };
@@ -207,35 +208,72 @@ void _test_numerical_differentiation()
 
 void _test_composite_function()
 {
-    cdouble F1, F2, F3;
-    cgeneric F4,F5,F6;
+    cdouble F[7];
+    cgeneric G1,G2,G3,G4;
 
     Eigen::MatrixXd k(1,1);
-    k << 1;
+    k << 2;
     _venezia::c_variable kv(k),kv_result;
+    //+++++++++++++++++++++++++++++++++++++++++++++
+    //G1 = F1();
+    std::cout << std::endl;
 
-    F4 = F3();
-    F5 = F4(F3);
-    //_venezia::c_fun_base f=F3();
-    F6 = F5(F4);
+    //G2 = G1(F1());
+    std::cout << std::endl;
 
-    kv_result = F3(kv);
-    std::cout << "F3 = " << kv_result.get() << std::endl;
+    G4 = G3(G2(G1(F[0]())));
+    std::cout << std::endl;
+    std::cout << "G4 info : " << G4.info() << std::endl;
+    std::cout << "G3 info : " << G3.info() << std::endl;
+    std::cout << "G2 info : " << G2.info() << std::endl;
+    std::cout << "G1 info : " << G1.info() << std::endl;
+
+    kv_result = F[0](kv);
+    std::cout << "F1 = " << kv_result.get() << std::endl;
     
-    kv_result = F4(kv);
-    std::cout << "F4 = " <<kv_result.get() << std::endl;
+    kv_result = G1(kv);
+    std::cout << "G1 = " <<kv_result.get() << std::endl;
     
-    kv_result = F5(kv);
-    std::cout << "F5 = " <<kv_result.get() << std::endl;
+    kv_result = G2(kv);
+    std::cout << "G2 = " <<kv_result.get() << std::endl;
 
-    kv_result = F6(kv);
-    std::cout << "F6 = " <<kv_result.get() << std::endl;
+    kv_result = G3(kv);
+    std::cout << "G3 = " <<kv_result.get() << std::endl;
+
+    kv_result = G4(kv);
+    std::cout << "G4 = " <<kv_result.get() << std::endl;
+
+    G1 = F[0]();std::cout << std::endl;
+    G2 = G1();std::cout << std::endl;
+    G3 = G2();std::cout << std::endl;
+    G4 = G3();std::cout << std::endl;
+
+    kv_result = G1(kv);
+    std::cout << "G1 = " <<kv_result.get() << std::endl;
+    
+    kv_result = G2(kv);
+    std::cout << "G2 = " <<kv_result.get() << std::endl;
+
+    kv_result = G3(kv);
+    std::cout << "G3 = " <<kv_result.get() << std::endl;
+
+    kv_result = G4(kv);
+    std::cout << "G4 = " <<kv_result.get() << std::endl;
+
+    F[3] = F[2](F[1](F[0]()));
+    std::cout << std::endl;
+    kv_result = F[3](kv);
+    std::cout << "F[3] = " <<kv_result.get() << std::endl;
+
+    csqure FS[4];
+    cexp B;
+    cgeneric composite_f;
+    composite_f = FS[2](FS[1](FS[0]()));
+
+    kv_result = composite_f(kv);
+    std::cout << "composite_f = " <<kv_result.get() << std::endl;
 
     /*
-    csqure A, C;
-    cexp B;
-    _venezia::c_fun composite_f(C(B(A())));
-
     Eigen::MatrixXd data(1,1);
     data << 0.5;
     _venezia::c_variable x(data);
