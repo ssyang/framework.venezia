@@ -272,8 +272,7 @@ void _test_composite_function()
 
     kv_result = composite_f(kv);
     std::cout << "composite_f = " <<kv_result.get() << std::endl;
-
-    /*
+    //
     Eigen::MatrixXd data(1,1);
     data << 0.5;
     _venezia::c_variable x(data);
@@ -282,7 +281,7 @@ void _test_composite_function()
 
     std::cout << "dy=" << std::endl;
     std::cout << dy() << std::endl;
-    */
+    
 }
 
 int main()
