@@ -27,21 +27,6 @@ void _test_matrix()
 
     std::cout << " b = " <<std::endl;
     std::cout << b() <<std::endl;
-/*
-    std::cout << (a*b)() <<std::endl;
-
-    std::cout <<std::endl;
-    std::cout << (a*2).get() <<std::endl;
-
-    std::cout <<std::endl;
-    std::cout << (3*a).get() <<std::endl;
-
-    std::cout <<std::endl;
-    std::cout << (1.1*a).get() <<std::endl;
-
-    std::cout <<std::endl;
-    std::cout << (1.2f*a).get() <<std::endl;
-*/
     std::cout <<std::endl;
 
     Eigen::MatrixXd data13(1,3);
@@ -293,6 +278,9 @@ int main()
     //_test_mul();
     //_test_numerical_differentiation();
     _test_composite_function();
+
+    _venezia::c_variable a(2,3);
+    std::cout << a() <<std::endl;
 
     //
 

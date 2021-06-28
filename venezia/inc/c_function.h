@@ -162,14 +162,12 @@ namespace _venezia
 
         c_fun& operator=( const c_fun & f)
         {
-            //deep copy
             m_list_ptr_override_fun = f.m_list_ptr_override_fun;
             return *this;
         }
 
         c_fun& operator=( const _c_fun_base::type_ptr & ptr_f_src)
         {
-            //deep copy
             if(ptr_f_src){
                 if(ptr_f_src->m_list_ptr_override_fun.empty()){
                     m_list_ptr_override_fun.push_back(ptr_f_src);

@@ -18,6 +18,11 @@ namespace _venezia
         {
             m_matrix_data = matrix_data;
         }
+        c_variable(EIGEN_DEFAULT_DENSE_INDEX_TYPE n_row, EIGEN_DEFAULT_DENSE_INDEX_TYPE n_col) :
+            m_b_last_error(false),
+            m_matrix_data(n_row,n_col)
+        {
+        }
         c_variable( const c_variable& rhs )
         {
             m_matrix_data = rhs.get();
