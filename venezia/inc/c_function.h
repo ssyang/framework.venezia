@@ -11,7 +11,7 @@ namespace _venezia
     /**
      * @brief interface
      * Don't use this class in external.
-     * this class must be used in c_fun template class only.
+     * this class must be used in c_function template class only.
      * 
      */
     class _c_fun_base
@@ -28,8 +28,6 @@ namespace _venezia
             _c_fun_base( const _c_fun_base & f)
             {
                 //deep copy
-                m_list_ptr_override_fun.clear();
-
                 std::for_each( f.m_list_ptr_override_fun.cbegin(),f.m_list_ptr_override_fun.cend(),[&](const _c_fun_base::type_ptr &ptr_fun){
                     if(ptr_fun){
                         m_list_ptr_override_fun.push_back(_c_fun_base::type_ptr(
@@ -81,6 +79,10 @@ namespace _venezia
                 return s_info;
             }
 
+            bool is_overload()
+            {
+                return !m_list_ptr_override_fun.empty();
+            }
         protected:
             c_variable _forward(const c_variable  & in_variable)
             {
@@ -124,25 +126,25 @@ namespace _venezia
     };
 
     /**
-     * @brief  c_fun template class
+     * @brief  c_function template class
      * this class is the base class of all function class.
      * 
      * using. how to create a function class.
      * 
-     * 1. inherit c_fun class
+     * 1. inherit c_function class
      * 2. add "using keyword"
      *      public:
      *      using _venezia::_c_fun_base::operator();
-     *      using _venezia::c_fun<your class namse>::operator=;
+     *      using _venezia::c_function<your class namse>::operator=;
      * 3. overload _default_forward() function.
      * 
      * example> If you design the unit function,(mathematically y=x) 
      *      It is as like below
-     *      class cf_unit : public _venezia::c_fun<cf_unit>
+     *      class cf_unit : public _venezia::c_function<cf_unit>
      *      {
      *          public:
      *          using _venezia::_c_fun_base::operator();
-     *          using _venezia::c_fun<cf_unit>::operator=;
+     *          using _venezia::c_function<cf_unit>::operator=;
      *          protected:
      *          virtual _venezia::c_variable _default_forward(const _venezia::c_variable & x)
      *          {
@@ -151,22 +153,22 @@ namespace _venezia
      *      };
      */
     template <typename  TT>
-    class c_fun : public _c_fun_base
+    class c_function : public _c_fun_base
     {
         public:
-        virtual ~c_fun(){}
-        c_fun() : _c_fun_base()
+        virtual ~c_function(){}
+        c_function() : _c_fun_base()
         {}
-        c_fun( const c_fun & f) : _c_fun_base(f)
+        c_function( const c_function & f) : _c_fun_base(f)
         {}
 
-        c_fun& operator=( const c_fun & f)
+        c_function& operator=( const c_function & f)
         {
             m_list_ptr_override_fun = f.m_list_ptr_override_fun;
             return *this;
         }
 
-        c_fun& operator=( const _c_fun_base::type_ptr & ptr_f_src)
+        c_function& operator=( const _c_fun_base::type_ptr & ptr_f_src)
         {
             if(ptr_f_src){
                 if(ptr_f_src->m_list_ptr_override_fun.empty()){

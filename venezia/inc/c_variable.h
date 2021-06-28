@@ -550,5 +550,7 @@ namespace _venezia
         private:
             Eigen::MatrixXd m_matrix_data;
             bool m_b_last_error;
+
+            Eigen::MatrixXd m_matrix_grad;
     };
 }
