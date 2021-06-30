@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <inc/c_fun_base.h>
+#include <inc/c_fun_base_t.h>
 
 namespace _venezia
 {
@@ -12,7 +12,7 @@ namespace _venezia
     class c_function : public _venezia::c_fun_base_t<c_function>
     {
         public:
-        using _venezia::_c_fun_base::operator();
+        using _venezia::c_fun_base_t<c_function>::operator();
         using _venezia::c_fun_base_t<c_function>::operator=;
 
         protected:
@@ -22,7 +22,7 @@ namespace _venezia
         }
         virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
         {
-            return _venezia::c_var_base(1);
+            return gy;// dy/dx = 1
         };
 
     };

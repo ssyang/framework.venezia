@@ -1,6 +1,7 @@
 #pragma once
 
 #include <inc/c_var_base.h>
+#include <inc/c_fun_base.h>
 
 namespace _venezia
 {
@@ -25,7 +26,24 @@ namespace _venezia
     {};
     c_variable( const c_var_base& rhs ) : c_var_base(rhs){};
 
-    protected:
+    void set_creator(const _venezia::_c_fun_base &creator)
+    {
+        m_creator = creator;
+    }
 
+    _venezia::_c_fun_base get_creator() const
+    {
+        return m_creator;
+    }
+
+    void backword()
+    {
+        c_variable x = m_creator.m_var_in;
+        x.set_gradient(m_creator.backword(m_matrix_grad));
+        x.backword();
+    }
+
+    protected:
+        _venezia::_c_fun_base m_creator;
     };
 }

@@ -42,11 +42,6 @@ namespace _venezia
                 return _forward(in_variable);
             }
 
-            c_var_base backword(const c_var_base & in_variable)
-            {
-                return _default_backward(in_variable,m_var_in);
-            }
-
             _c_fun_base::type_ptr operator()() const
             {
                 _c_fun_base::type_ptr ptr_new_fun(_get_new_instance());
@@ -71,6 +66,11 @@ namespace _venezia
                 return ptr_new_fun;
             }
 
+            c_var_base backword(const c_var_base & in_variable)
+            {
+                return _default_backward(in_variable,m_var_in);
+            }
+
             std::string info()
             {
                 std::string s_info;
@@ -89,26 +89,25 @@ namespace _venezia
                 return !m_list_ptr_override_fun.empty();
             }
         protected:
-            c_var_base _forward(const c_var_base  & x)
+            virtual c_var_base _forward(const c_var_base  & x)
             {
-                c_var_base out_var;
                 do{
                     m_var_in = x;
 
                     if(m_list_ptr_override_fun.empty()){
-                        out_var = _default_forward(x);
+                        m_var_out = _default_forward(x);
                         continue;
                     }
 
-                    out_var = x;
+                    m_var_out = x;
                     std::for_each( m_list_ptr_override_fun.begin(),m_list_ptr_override_fun.end(),[&](_c_fun_base::type_ptr &ptr_fun){
                         if(ptr_fun){
-                            out_var = ptr_fun->_forward(out_var);
+                            m_var_out = ptr_fun->_forward(m_var_out);
                         }
                     });
 
                 }while(false);
-                return  out_var;
+                return  m_var_out;
             }
 
             virtual c_var_base _default_forward(const c_var_base  & data)
@@ -135,79 +134,7 @@ namespace _venezia
 
         public:
             std::list<_c_fun_base::type_ptr> m_list_ptr_override_fun;
-            c_var_base m_var_in;
-    };
-
-    /**
-     * @brief  c_fun_base_t template class
-     * this class is the base class of all function class.
-     * 
-     * using. how to create a function class.
-     * 
-     * 1. inherit c_fun_base_t class
-     * 2. add "using keyword"
-     *      public:
-     *      using _venezia::_c_fun_base::operator();
-     *      using _venezia::c_fun_base_t<your class namse>::operator=;
-     * 3. overload _default_forward() function.
-     * 
-     * example> If you design the unit function,(mathematically y=x) 
-     *      It is as like below
-     *      class cf_unit : public _venezia::c_fun_base_t<cf_unit>
-     *      {
-     *          public:
-     *          using _venezia::_c_fun_base::operator();
-     *          using _venezia::c_fun_base_t<cf_unit>::operator=;
-     *          protected:
-     *          virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
-     *          {
-     *              return x; //y=x function
-     *          }
-     *      };
-     */
-    template <typename  TT>
-    class c_fun_base_t : public _c_fun_base
-    {
-        public:
-        virtual ~c_fun_base_t(){}
-        c_fun_base_t() : _c_fun_base()
-        {}
-        c_fun_base_t( const c_fun_base_t & f) : _c_fun_base(f)
-        {}
-
-        c_fun_base_t& operator=( const c_fun_base_t & f)
-        {
-            m_list_ptr_override_fun = f.m_list_ptr_override_fun;
-            return *this;
-        }
-
-        c_fun_base_t& operator=( const _c_fun_base::type_ptr & ptr_f_src)
-        {
-            if(ptr_f_src){
-                if(ptr_f_src->m_list_ptr_override_fun.empty()){
-                    m_list_ptr_override_fun.push_back(ptr_f_src);
-                }
-                else{
-                    m_list_ptr_override_fun = ptr_f_src->m_list_ptr_override_fun;
-                }
-            }
-            //std::cout << "="<< typeid(TT).name()<< m_list_ptr_override_fun.size() <<"=";
-            return *this;
-        }
-
-        public:
-            virtual _c_fun_base::type_ptr _get_raw_new_instance() const
-            {
-                _c_fun_base::type_ptr ptr_new_f( new TT() );
-                return ptr_new_f;
-            }
-
-            virtual _c_fun_base::type_ptr _get_new_instance() const
-            {
-                _c_fun_base::type_ptr ptr_new_f( new TT() );
-                ptr_new_f->m_list_ptr_override_fun = m_list_ptr_override_fun;
-                return ptr_new_f;
-            }
+            c_var_base m_var_in,m_var_out;
     };
 
 }

@@ -289,15 +289,19 @@ void _test_backword()
     _venezia::c_variable x(0.5);
     _venezia::c_variable a = A(x);
     _venezia::c_variable b = B(a);
-    _venezia::c_variable c = C(b);
-    std::cout << "forward : "<< c() <<std::endl;
+    _venezia::c_variable y = C(b);
+    std::cout << "forward : "<< y() <<std::endl;
     //
-    _venezia::c_variable y;
+    std::cout << "." <<std::endl;
     y.set_gradient(_venezia::c_variable(1));
+    std::cout << ".." <<std::endl;
+    y.backword();
+    std::cout << "..." <<std::endl;
+    /*
     b.set_gradient(C.backword(y.get_gradient()));
     a.set_gradient(B.backword(b.get_gradient()));
     x.set_gradient(A.backword(a.get_gradient()));
-
+    */
     std::cout << "backward : "<< x.get_gradient()() <<std::endl;
 }
 int main()

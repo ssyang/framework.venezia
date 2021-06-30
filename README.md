@@ -1,12 +1,22 @@
 # framework.venezia
 my C++ AI framework
 
-class hierarchy
+* class hierarchy
 
-c_var_base
+* c_var_base
+  * MatrixXd m_matrix_data
+  * MatrixXd m_matrix_grad
+* _c_fun_base
+  * include c_var_base
+  * c_var_base m_var_in
+  * m_var_in = x at _forward()
+* c_fun_base_t : public _c_fun_base
+  * template class
 
-_c_fun_base  c_variable
-c_fun_base_t
+* c_variable : public c_var_base
+  * include c_fun_base
+  * set_creator
 
-c_function
+* c_function : public _venezia::c_fun_base_t<c_function>
+  * include c_variable
 
