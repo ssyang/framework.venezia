@@ -10,6 +10,78 @@
 #include <inc/function.h>
 
 
+class cdouble : public _venezia::c_function
+{
+    public:
+    using _venezia::c_function::operator();
+    using _venezia::c_function::operator=;
+    protected:
+    virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
+    {
+        std::cout << "[cdouble]";
+        return x*2;
+    }
+    virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
+    {
+        _venezia::c_var_base gx = 2*gy;
+        return gx;
+    };
+
+};
+
+class csqure : public _venezia::c_function
+{
+    public:
+    using _venezia::c_function::operator();
+    using _venezia::c_function::operator=;
+    protected:
+    virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
+    {
+        return x*x;
+    }
+    virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
+    {
+        _venezia::c_var_base gx = 2*x*gy;
+        return gx;
+    };
+};
+
+class cexp : public _venezia::c_function
+{
+    public:
+    using _venezia::c_function::operator();
+    using _venezia::c_function::operator=;
+    protected:
+    virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
+    {
+        _venezia::c_var_base result(__x86_64__);
+
+        _venezia::c_var_base::type_size mt_size(result.size());
+
+        for( size_t i = 0; i<mt_size.first; i++){
+            for( size_t j = 0; j<mt_size.second; j++){
+                result.set(i,j, exp(x.get()(i,j)) );
+            }
+        }
+        return result;
+    }
+    virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
+    {
+        _venezia::c_var_base gx(gy);
+
+        _venezia::c_var_base::type_size mt_size(gx.size());
+
+        for( size_t i = 0; i<mt_size.first; i++){
+            for( size_t j = 0; j<mt_size.second; j++){
+                gx.set(i,j, exp(x.get()(i,j)) * gy.get()(i,j) );
+            }
+        }
+        return gx;
+    };
+
+};
+
+
 void _test_matrix()
 {
     Eigen::MatrixXd data23(2,3);
@@ -55,66 +127,6 @@ void _test_matrix()
     std::cout <<std::endl;
 
 }
-
-class cgeneric : public _venezia::c_function<cgeneric>
-{
-    public:
-    using _venezia::_c_fun_base::operator();
-    using _venezia::c_function<cgeneric>::operator=;
-
-    protected:
-    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
-    {
-        std::cout << "[cgeneric]";
-        return data;
-    }
-};
-
-class cdouble : public _venezia::c_function<cdouble>
-{
-    public:
-    using _venezia::_c_fun_base::operator();
-    using _venezia::c_function<cdouble>::operator=;
-    protected:
-    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
-    {
-        std::cout << "[cdouble]";
-        return data*2;
-    }
-};
-
-class csqure : public _venezia::c_function<csqure>
-{
-    public:
-    using _venezia::_c_fun_base::operator();
-    using _venezia::c_function<csqure>::operator=;
-    protected:
-    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
-    {
-        return data*data;
-    }
-};
-
-class cexp : public _venezia::c_function<cexp>
-{
-    public:
-    using _venezia::_c_fun_base::operator();
-    using _venezia::c_function<cexp>::operator=;
-    protected:
-    virtual _venezia::c_variable _default_forward(const _venezia::c_variable & data)
-    {
-        _venezia::c_variable result(data);
-
-        _venezia::c_variable::type_size mt_size(result.size());
-
-        for( size_t i = 0; i<mt_size.first; i++){
-            for( size_t j = 0; j<mt_size.second; j++){
-                result.set(i,j, exp(data.get()(i,j)) );
-            }
-        }
-        return result;
-    }
-};
 
 void _test_function()
 {
@@ -194,7 +206,7 @@ void _test_numerical_differentiation()
 void _test_composite_function()
 {
     cdouble F[7];
-    cgeneric G1,G2,G3,G4;
+    _venezia::c_function G1,G2,G3,G4;
 
     Eigen::MatrixXd k(1,1);
     k << 2;
@@ -252,7 +264,7 @@ void _test_composite_function()
 
     csqure FS[4];
     cexp B;
-    cgeneric composite_f;
+    _venezia::c_function composite_f;
     composite_f = FS[2](FS[1](FS[0]()));
 
     kv_result = composite_f(kv);
@@ -269,6 +281,25 @@ void _test_composite_function()
     
 }
 
+void _test_backword()
+{
+    csqure A,C;
+    cexp B;
+
+    _venezia::c_variable x(0.5);
+    _venezia::c_variable a = A(x);
+    _venezia::c_variable b = B(a);
+    _venezia::c_variable c = C(b);
+    std::cout << "forward : "<< c() <<std::endl;
+    //
+    _venezia::c_variable y;
+    y.set_gradient(_venezia::c_variable(1));
+    b.set_gradient(C.backword(y.get_gradient()));
+    a.set_gradient(B.backword(b.get_gradient()));
+    x.set_gradient(A.backword(a.get_gradient()));
+
+    std::cout << "backward : "<< x.get_gradient()() <<std::endl;
+}
 int main()
 {
 
@@ -277,16 +308,7 @@ int main()
     //_test_function();
     //_test_mul();
     //_test_numerical_differentiation();
-    _test_composite_function();
-
-    _venezia::c_variable a(2,3);
-    std::cout << a() <<std::endl;
-
-    //
-
-    /*
-    _venezia::c_variable x(Eigen::MatrixXd(7));
-    _venezia::c_variable dy = _venezia::numerical_differentiation(fun_squre,x);
-    std::wcout <<" dy = "<< dy() <<std::endl;
-    */
+    //_test_composite_function();
+    _test_backword();
+    
 }
