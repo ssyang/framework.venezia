@@ -23,6 +23,7 @@ class cdouble : public _venezia::c_function
     }
     virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
     {
+        std::cout << "=cdouble=";
         _venezia::c_var_base gx = 2*gy;
         return gx;
     };
@@ -37,10 +38,12 @@ class csqure : public _venezia::c_function
     protected:
     virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
     {
+        std::cout << "[csqure]";
         return x*x;
     }
     virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
     {
+        std::cout << "=csqure=";
         _venezia::c_var_base gx = 2*x*gy;
         return gx;
     };
@@ -54,7 +57,8 @@ class cexp : public _venezia::c_function
     protected:
     virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
     {
-        _venezia::c_var_base result(__x86_64__);
+        std::cout << "[cexp]";
+        _venezia::c_var_base result(x);
 
         _venezia::c_var_base::type_size mt_size(result.size());
 
@@ -67,6 +71,7 @@ class cexp : public _venezia::c_function
     }
     virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
     {
+        std::cout << "=cexp=";
         _venezia::c_var_base gx(gy);
 
         _venezia::c_var_base::type_size mt_size(gx.size());
