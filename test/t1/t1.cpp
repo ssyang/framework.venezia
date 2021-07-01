@@ -302,7 +302,9 @@ void _test_backword()
     a.set_gradient(B.backword(b.get_gradient()));
     x.set_gradient(A.backword(a.get_gradient()));
     */
-    std::cout << "backward : "<< x.get_gradient()() <<std::endl;
+    _venezia::c_variable out = x.get_gradient();
+    std::cout << "backward : "<< out() <<std::endl;
+    std::cout << "...." <<std::endl;
 }
 int main()
 {

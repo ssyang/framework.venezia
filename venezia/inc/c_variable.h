@@ -28,22 +28,24 @@ namespace _venezia
 
     void set_creator(const _venezia::_c_fun_base &creator)
     {
-        m_creator = creator;
+        m_ptr_creator = _venezia::_c_fun_base::type_ptr(new _venezia::_c_fun_base(creator));
     }
 
-    _venezia::_c_fun_base get_creator() const
+    _venezia::_c_fun_base::type_ptr get_creator() const
     {
-        return m_creator;
+        return m_ptr_creator;
     }
 
     void backword()
     {
-        c_variable x = m_creator.m_var_in;
-        x.set_gradient(m_creator.backword(m_matrix_grad));
-        x.backword();
+        if(m_ptr_creator){
+            c_variable x = m_ptr_creator->m_var_in;
+            x.set_gradient(m_ptr_creator->backword(m_matrix_grad));
+            x.backword();
+        }
     }
 
     protected:
-        _venezia::_c_fun_base m_creator;
+        _venezia::_c_fun_base::type_ptr m_ptr_creator;
     };
 }
