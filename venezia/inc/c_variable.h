@@ -27,8 +27,6 @@ namespace _venezia
 
     c_variable& operator=(const c_variable& rhs)
     {
-        m_matrix_data = rhs.get();
-        m_b_last_error = rhs.m_b_last_error;
         c_var_base::operator=(rhs);
         m_creator = rhs.m_creator;
         m_b_set_creatotr = rhs.m_b_set_creatotr;
