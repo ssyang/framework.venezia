@@ -18,10 +18,12 @@ namespace _venezia
         protected:
         virtual _venezia::c_var_base _default_forward(const _venezia::c_var_base & x)
         {
+            std::cout << "[c_function]";
             return x;//y=x function
         }
         virtual _venezia::c_var_base _default_backward(const _venezia::c_var_base  & gy,const _venezia::c_var_base  & x)
         {
+            std::cout << "=c_function=";
             return gy;// dy/dx = 1
         };
 

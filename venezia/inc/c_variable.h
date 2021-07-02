@@ -9,7 +9,6 @@ namespace _venezia
     {
     public:
     using _venezia::c_var_base::operator();
-    using _venezia::c_var_base::operator=;
     using _venezia::c_var_base::operator+=;
     using _venezia::c_var_base::operator-=;
     using _venezia::c_var_base::operator*=;
@@ -26,26 +25,39 @@ namespace _venezia
     {};
     c_variable( const c_var_base& rhs ) : c_var_base(rhs){};
 
-    void set_creator(const _venezia::_c_fun_base &creator)
+    c_variable& operator=(const c_variable& rhs)
     {
-        m_ptr_creator = _venezia::_c_fun_base::type_ptr(new _venezia::_c_fun_base(creator));
+        m_matrix_data = rhs.get();
+        m_b_last_error = rhs.m_b_last_error;
+        c_var_base::operator=(rhs);
+        m_creator = rhs.m_creator;
+        m_b_set_creatotr = rhs.m_b_set_creatotr;
+        return *this;
     }
 
-    _venezia::_c_fun_base::type_ptr get_creator() const
+    c_variable& operator=(const Eigen::MatrixXd& rhs)
     {
-        return m_ptr_creator;
+        c_var_base::operator=(rhs);
+        return *this;
+    }
+
+    void set_creator(const _venezia::_c_fun_base &creator)
+    {
+        m_b_set_creatotr = true;
+        m_creator = creator;
     }
 
     void backword()
     {
-        if(m_ptr_creator){
-            c_variable x = m_ptr_creator->m_var_in;
-            x.set_gradient(m_ptr_creator->backword(m_matrix_grad));
+        if(m_b_set_creatotr){
+            c_variable x = m_creator.m_var_in;
+            x.set_gradient(m_creator.backword(m_matrix_grad));
             x.backword();
         }
     }
 
     protected:
-        _venezia::_c_fun_base::type_ptr m_ptr_creator;
+        _venezia::_c_fun_base m_creator;
+        bool m_b_set_creatotr = false;
     };
 }

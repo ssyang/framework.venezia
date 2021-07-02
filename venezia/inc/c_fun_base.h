@@ -112,10 +112,12 @@ namespace _venezia
 
             virtual c_var_base _default_forward(const c_var_base  & data)
             {
+                std::cout << "[_c_fun_base]";
                 return data;
             };
             virtual c_var_base _default_backward(const c_var_base  & gy,const c_var_base  & x)
             {
+                std::cout << "=_c_fun_base=";
                 return c_var_base(1);
             };
 
