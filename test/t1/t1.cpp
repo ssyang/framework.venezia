@@ -9,7 +9,82 @@
 #include <inc/c_function.h>
 #include <inc/function.h>
 
+#include <inc/c_var.h>
+#include <inc/c_fun.h>
 
+class CDouble : public _venezia::c_fun
+{
+    public:
+    using _venezia::c_fun::operator();
+    protected:
+    virtual _venezia::c_var _default_forward(const _venezia::c_var & x)
+    {
+        std::cout << "[CDouble]";
+        return x*2;
+    }
+    virtual _venezia::c_var _default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
+    {
+        std::cout << "=CDouble=";
+        _venezia::c_var gx = 2*gy;
+        return gx;
+    };
+
+};
+
+class CSqure : public _venezia::c_fun
+{
+    public:
+    using _venezia::c_fun::operator();
+    protected:
+    virtual _venezia::c_var _default_forward(const _venezia::c_var & x)
+    {
+        std::cout << "[CSqure]";
+        return x*x;
+    }
+    virtual _venezia::c_var _default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
+    {
+        std::cout << "=CSqure=";
+        _venezia::c_var gx = 2*x*gy;
+        return gx;
+    };
+};
+
+class CExp : public _venezia::c_fun
+{
+    public:
+    using _venezia::c_fun::operator();
+    protected:
+    virtual _venezia::c_var _default_forward(const _venezia::c_var & x)
+    {
+        std::cout << "[cexp]";
+        _venezia::c_var result(x);
+
+        _venezia::c_var::type_size mt_size(result.size());
+
+        for( size_t i = 0; i<mt_size.first; i++){
+            for( size_t j = 0; j<mt_size.second; j++){
+                result.set(i,j, exp(x.get()(i,j)) );
+            }
+        }
+        return result;
+    }
+    virtual _venezia::c_var _default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
+    {
+        std::cout << "=cexp=";
+        _venezia::c_var gx(gy);
+
+        _venezia::c_var::type_size mt_size(gx.size());
+
+        for( size_t i = 0; i<mt_size.first; i++){
+            for( size_t j = 0; j<mt_size.second; j++){
+                gx.set(i,j, exp(x.get()(i,j)) * gy.get()(i,j) );
+            }
+        }
+        return gx;
+    };
+
+};
+//////////////////////////////////////////////////
 class cdouble : public _venezia::c_function
 {
     public:
@@ -292,9 +367,41 @@ void _test_backword()
     cexp B;
 
     _venezia::c_variable x(0.5);
+
+    //
+    std::cout << std::endl;
+    std::cout << "x : " << std::endl;
+    std::cout << x.info() << std::endl;
+
     _venezia::c_variable a = A(x);
+
+    std::cout << std::endl;
+    std::cout << "A : " << std::endl;
+    std::cout << A.info() << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "a : " << std::endl;
+    std::cout << a.info() << std::endl;
+    //
     _venezia::c_variable b = B(a);
+
+    std::cout << std::endl;
+    std::cout << "B : " << std::endl;
+    std::cout << B.info() << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "b : " << std::endl;
+    std::cout << b.info() << std::endl;
+    //
     _venezia::c_variable y = C(b);
+    std::cout << std::endl;
+    std::cout << "C : " << std::endl;
+    std::cout << C.info() << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "y : " << std::endl;
+    std::cout << y.info() << std::endl;
+
     std::cout << "forward : "<< y() <<std::endl;
     //
     std::cout << "." <<std::endl;
@@ -302,6 +409,31 @@ void _test_backword()
     std::cout << ".." <<std::endl;
     y.backword();
     std::cout << "..." <<std::endl;
+
+    /////////////////////////////////////////////////////////////
+    std::cout << std::endl;
+    std::cout << "x : " << std::endl;
+    std::cout << x.info() << std::endl;
+
+    std::cout << "A : " << std::endl;
+    std::cout << A.info() << std::endl;
+
+    std::cout << "a : " << std::endl;
+    std::cout << a.info() << std::endl;
+
+    std::cout << "B : " << std::endl;
+    std::cout << B.info() << std::endl;
+
+    std::cout << "b : " << std::endl;
+    std::cout << b.info() << std::endl;
+
+    std::cout << "C : " << std::endl;
+    std::cout << C.info() << std::endl;
+
+    std::cout << "y : " << std::endl;
+    std::cout << y.info() << std::endl;
+
+    /////////////////////////////////////////////////////////////
     /*
     b.set_gradient(C.backword(y.get_gradient()));
     a.set_gradient(B.backword(b.get_gradient()));
@@ -311,6 +443,105 @@ void _test_backword()
     std::cout << "backward : "<< out() <<std::endl;
     std::cout << "...." <<std::endl;
 }
+
+void _test_cpp()
+{
+    class ts
+    {
+        public: 
+        typedef std::shared_ptr<ts> type_ptr;
+        ts()
+        {
+            std::cout << "[ts::ts]\n";
+        }
+        virtual void info()
+        {
+            std::cout << "[ts::info]\n";
+        }
+    };
+
+    class ts_a : public ts
+    {
+        public: 
+        ts_a()
+        {
+            std::cout << "[ts_a::ts_a]\n";
+        }
+
+        virtual void info()
+        {
+            std::cout << "[ts_a::info]\n";
+        }
+    };
+
+    ts root;
+    ts_a a;
+    root.info();
+    a.info();
+
+    ts::type_ptr ptr_root(new ts_a());
+    ptr_root->info();
+
+}
+
+void _test_new1()
+{
+    CSqure A,C;
+    CExp B;
+
+    _venezia::c_var x(0.5);
+
+    //
+    std::cout << std::endl;
+    std::cout << "x : " << std::endl;
+    std::cout << x.string() << std::endl;
+
+    _venezia::c_var a = A(x);
+
+    //std::cout << std::endl;
+    //std::cout << "A : " << std::endl;
+    //std::cout << A.info() << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "a : " << std::endl;
+    std::cout << a.string() << std::endl;
+    //
+    _venezia::c_var b = B(a);
+
+    //std::cout << std::endl;
+    //std::cout << "B : " << std::endl;
+    //std::cout << B.info() << std::endl;
+
+    //std::cout << std::endl;
+    std::cout << "b : " << std::endl;
+    std::cout << b.string() << std::endl;
+    //
+    _venezia::c_var y = C(b);
+    std::cout << std::endl;
+    //std::cout << "C : " << std::endl;
+    //std::cout << C.info() << std::endl;
+
+    //std::cout << std::endl;
+    std::cout << "y : " << std::endl;
+    std::cout << y.string() << std::endl;
+
+    std::cout << "forward : "<< y.string() <<std::endl;
+    //
+    std::cout << "." <<std::endl;
+    y.set_gradient(_venezia::c_var(1));
+    std::cout << ".." <<std::endl;
+    y.backword();
+    std::cout << "..." <<std::endl;
+
+    /////////////////////////////////////////////////////////////
+    /*
+    b.set_gradient(C.backword(y.get_gradient()));
+    a.set_gradient(B.backword(b.get_gradient()));
+    x.set_gradient(A.backword(a.get_gradient()));
+    */
+    _venezia::c_variable out = x.get_gradient();
+    std::cout << "backward : "<< out() <<std::endl;
+    std::cout << "...." <<std::endl;}
 int main()
 {
 
@@ -320,6 +551,8 @@ int main()
     //_test_mul();
     //_test_numerical_differentiation();
     //_test_composite_function();
-    _test_backword();
-    
+    //_test_backword();
+    //_test_cpp();
+    _test_new1();
+    return 0;
 }

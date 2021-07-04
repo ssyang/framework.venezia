@@ -27,14 +27,7 @@ namespace _venezia
 
             _c_fun_base( const _c_fun_base & f)
             {
-                //deep copy
-                std::for_each( f.m_list_ptr_override_fun.cbegin(),f.m_list_ptr_override_fun.cend(),[&](const _c_fun_base::type_ptr &ptr_fun){
-                    if(ptr_fun){
-                        m_list_ptr_override_fun.push_back(_c_fun_base::type_ptr(
-                            new _c_fun_base(*ptr_fun)
-                        ));
-                    }
-                });
+                m_list_ptr_override_fun = f.m_list_ptr_override_fun;
             }
 
             c_var_base operator()(const c_var_base & in_variable )
@@ -74,12 +67,20 @@ namespace _venezia
             std::string info()
             {
                 std::string s_info;
-                s_info += '[';
+                std::stringstream ss_in,ss_out;
+                ss_in << m_var_in.get();
+                ss_out << m_var_out.get();
+
+                s_info += "[";
                 s_info +=typeid(this).name();
                 s_info += "][";
 
                 s_info += std::to_string(m_list_ptr_override_fun.size());
 
+                s_info += "][";
+                s_info += ss_in.str();
+                s_info += "][";
+                s_info += ss_out.str();
                 s_info += ']';
                 return s_info;
             }
@@ -120,7 +121,6 @@ namespace _venezia
                 std::cout << "=_c_fun_base=";
                 return c_var_base(1);
             };
-
 
         public:
             virtual _c_fun_base::type_ptr _get_raw_new_instance() const

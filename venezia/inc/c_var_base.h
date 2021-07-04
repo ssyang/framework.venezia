@@ -108,6 +108,11 @@ namespace _venezia
             return c_var_base(m_matrix_grad);
         }
 
+        virtual void backword()
+        {
+            std::cout << "*";
+        }
+
         Eigen::MatrixXd operator()() const
         {
             return m_matrix_data;

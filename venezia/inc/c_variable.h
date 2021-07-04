@@ -45,13 +45,38 @@ namespace _venezia
         m_creator = creator;
     }
 
-    void backword()
+    virtual void backword()
     {
         if(m_b_set_creatotr){
-            c_variable x = m_creator.m_var_in;
-            x.set_gradient(m_creator.backword(m_matrix_grad));
-            x.backword();
+            std::cout << "^";
+            c_var_base dx = m_creator.backword(m_matrix_grad);
+            m_creator.m_var_in.set_gradient(dx);
+            m_creator.m_var_in.backword();
         }
+    }
+
+    std::string info()
+    {
+        std::string s_info;
+        std::stringstream ss_in,ss_out;
+        ss_in << m_matrix_data;
+        ss_out << m_matrix_grad;
+
+        s_info += "[";
+        s_info +=typeid(this).name();
+        s_info += "][";
+
+        if(m_b_set_creatotr)
+            s_info +=typeid(&m_creator).name();
+        else
+            s_info += "none";
+
+        s_info += "][";
+        s_info += ss_in.str();
+        s_info += "][";
+        s_info += ss_out.str();
+        s_info += ']';
+        return s_info;
     }
 
     protected:
