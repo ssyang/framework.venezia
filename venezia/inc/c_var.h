@@ -4,7 +4,8 @@
 
 #include <utility>
 #include <Eigen/Dense>
-#include <inc/c_fun.h>
+#include <inc/_c_var.h>
+#include <inc/_c_fun.h>
 
 namespace _venezia
 {
@@ -15,6 +16,47 @@ namespace _venezia
             typedef std::pair<size_t,size_t>    type_size;
         protected:
             typedef std::shared_ptr<Eigen::MatrixXd>  type_ptr_mt;
+        public:
+
+        virtual void set_gradient(const c_var & v)
+        {
+            if(v.m_ptr_mt_grad){
+                m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(*(v.m_ptr_mt_grad)));
+            }
+            else{
+                m_ptr_mt_grad = v.m_ptr_mt_grad;
+            }
+        }
+
+        virtual bool empty()
+        {
+            if( !m_ptr_mt_data )
+                return true;
+            else
+                return false;
+        }
+
+        virtual void set_creator( _venezia::c_fun *p_creator)
+        {
+            m_p_creator = p_creator;
+        }
+
+        virtual bool backword()
+        {
+            bool b_result(false);
+            do{
+                if(m_p_creator==nullptr)
+                    continue;
+                if(!m_ptr_mt_data)
+                    continue;
+                if(!m_ptr_mt_grad)
+                    continue;
+                //
+                b_result = m_p_creator->backword(*m_ptr_mt_grad);
+            }while(false);
+            return b_result;
+        }
+
         public:
         c_var()
         {
@@ -674,16 +716,6 @@ namespace _venezia
            (*m_ptr_mt_data)(n_row,n_col) = n_val;
         }
 
-        virtual void set_gradient(const c_var & v)
-        {
-            if(v.m_ptr_mt_grad){
-                m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(*(v.m_ptr_mt_grad)));
-            }
-            else{
-                m_ptr_mt_grad = v.m_ptr_mt_grad;
-            }
-        }
-
         Eigen::MatrixXd get() const
         {
             if(m_ptr_mt_data)
@@ -709,35 +741,6 @@ namespace _venezia
             else{
                 return std::string();
             }
-        }
-
-        virtual bool empty()
-        {
-            if( !m_ptr_mt_data )
-                return true;
-            else
-                return false;
-        }
-
-        virtual void set_creator( _venezia::c_fun *p_creator)
-        {
-            m_p_creator = p_creator;
-        }
-
-        virtual bool backword()
-        {
-            bool b_result(false);
-            do{
-                if(m_p_creator==nullptr)
-                    continue;
-                if(!m_ptr_mt_data)
-                    continue;
-                if(!m_ptr_mt_grad)
-                    continue;
-                //
-                b_result = m_p_creator->backword(*m_ptr_mt_grad);
-            }while(false);
-            return b_result;
         }
         protected:
             c_var::type_ptr_mt m_ptr_mt_data,m_ptr_mt_grad;

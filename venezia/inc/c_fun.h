@@ -6,8 +6,12 @@ namespace _venezia
 {
     class c_fun : public _c_fun
     {
+        protected:
+            virtual _venezia::c_var _default_forward(const _venezia::c_var & in) = 0;
+            virtual _venezia::c_var _default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x) =0 ;
+
         public:
-            _venezia::_c_var operator()(const _venezia::_c_var & in)
+            _venezia::c_var operator()(const _venezia::c_var & in)
             {
                 m_x = in;
                 m_y = _default_forward(in);
@@ -15,28 +19,22 @@ namespace _venezia
                 return m_y;
             }
 
-            bool backword(const _venezia::_c_var & dy)
+            bool backword(const _venezia::c_var & dy)
             {
                 bool b_result(false);
                 do{
                     if( m_x.empty() ){
                         continue;
                     }
-                    _venezia::_c_var dx = _default_backward(dy,m_x);
+                    _venezia::c_var dx = _default_backward(dy,m_x);
                     m_x.set_gradient(dx);
                     b_result = m_x.backword();
                 }while(false);
                 return b_result;
             }
 
-        protected:
-            virtual _venezia::_c_var _default_forward(const _venezia::_c_var & in) = 0;
-            virtual _venezia::_c_var _default_backward(const _venezia::_c_var  & gy,const _venezia::_c_var  & x) =0 ;
-
-            virtual _venezia::_c_var _default_forward(const _venezia::_c_var & in) = 0;
-            virtual _venezia::_c_var _default_backward(const _venezia::_c_var  & gy,const _venezia::_c_var  & x) =0 ;
 
         protected:
-            _venezia::_c_var m_x,m_y;  
+            _venezia::c_var m_x,m_y;  
     };
 }
