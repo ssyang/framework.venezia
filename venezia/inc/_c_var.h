@@ -13,8 +13,8 @@ namespace _venezia
     {
         public:
         virtual bool empty() = 0;
-        virtual void set_gradient(const _c_var & v) = 0;
-        virtual void set_creator( _venezia::c_fun *p_creator) = 0;
+        virtual void set_gradient(const Eigen::MatrixXd & v) = 0;
+        virtual void set_creator( const _venezia::c_fun *p_creator) = 0;
         virtual bool backword() = 0;
     };
 }

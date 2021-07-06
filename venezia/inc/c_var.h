@@ -18,16 +18,6 @@ namespace _venezia
             typedef std::shared_ptr<Eigen::MatrixXd>  type_ptr_mt;
         public:
 
-        virtual void set_gradient(const c_var & v)
-        {
-            if(v.m_ptr_mt_grad){
-                m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(*(v.m_ptr_mt_grad)));
-            }
-            else{
-                m_ptr_mt_grad = v.m_ptr_mt_grad;
-            }
-        }
-
         virtual bool empty()
         {
             if( !m_ptr_mt_data )
@@ -35,12 +25,14 @@ namespace _venezia
             else
                 return false;
         }
-
+        virtual void set_gradient(const Eigen::MatrixXd & v)
+        {
+            m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(v));
+        }
         virtual void set_creator( _venezia::c_fun *p_creator)
         {
             m_p_creator = p_creator;
         }
-
         virtual bool backword()
         {
             bool b_result(false);
