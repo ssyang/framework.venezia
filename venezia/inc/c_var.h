@@ -4,12 +4,11 @@
 
 #include <utility>
 #include <Eigen/Dense>
-#include <inc/_c_var.h>
 #include <inc/_c_fun.h>
 
 namespace _venezia
 {
-    class c_var : public _c_var
+    class c_var
     {
         public:
             typedef std::shared_ptr<c_var>  type_ptr;
@@ -29,7 +28,7 @@ namespace _venezia
         {
             m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(v));
         }
-        virtual void set_creator( _venezia::c_fun *p_creator)
+        virtual void set_creator( void *p_creator)
         {
             m_p_creator = p_creator;
         }
@@ -47,6 +46,16 @@ namespace _venezia
                 b_result = m_p_creator->backword(*m_ptr_mt_grad);
             }while(false);
             return b_result;
+        }
+
+        c_var get_gradient() const
+        {
+            if(m_ptr_mt_data){
+                return c_var(*m_ptr_mt_data);
+            }
+            else{
+                return c_var();
+            }
         }
 
         public:
@@ -736,7 +745,7 @@ namespace _venezia
         }
         protected:
             c_var::type_ptr_mt m_ptr_mt_data,m_ptr_mt_grad;
-            _venezia::c_fun *m_p_creator = nullptr;
+            void *m_p_creator = nullptr;
 
     };
 }

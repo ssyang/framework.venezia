@@ -1,10 +1,12 @@
 #pragma once
 
 #include <inc/_c_fun.h>
+#include <inc/c_var.h>
 
 namespace _venezia
 {
-    class c_fun : public _c_fun
+   
+    class c_fun
     {
         protected:
             virtual const _venezia::c_var& _default_forward(const _venezia::c_var & p_in) = 0;
@@ -27,7 +29,7 @@ namespace _venezia
                         continue;
                     }
                     _venezia::c_var dx = _default_backward(dy,m_x);
-                    m_x.set_gradient(dx);
+                    m_x.set_gradient(dx.get());
                     b_result = m_x.backword();
                 }while(false);
                 return b_result;
