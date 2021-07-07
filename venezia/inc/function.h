@@ -1,7 +1,7 @@
 #pragma once
 
-#include <inc/c_variable.h>
-#include <inc/c_function.h>
+#include <inc/c_var.h>
+#include <inc/c_fun.h>
 
 namespace _venezia
 {
@@ -12,15 +12,15 @@ namespace _venezia
      */
 
     template <typename T>
-    _venezia::c_variable numerical_differentiation( T & fun, const _venezia::c_variable & var, double d_eps = 1.00e-4 )
+    _venezia::c_var numerical_differentiation( T & fun, const _venezia::c_var & var, double d_eps = 1.00e-4 )
     {
-        _venezia::c_variable result;
+        _venezia::c_var result;
 
-        _venezia::c_variable x0(var-d_eps);
-        _venezia::c_variable x1(var+d_eps);
+        _venezia::c_var x0(var-d_eps);
+        _venezia::c_var x1(var+d_eps);
 
-        _venezia::c_variable y0(fun(x0));
-        _venezia::c_variable y1(fun(x1));
+        _venezia::c_var y0(fun(x0));
+        _venezia::c_var y1(fun(x1));
 
         result = (y1.get()-y0.get())/(2.00*d_eps);
         return result;

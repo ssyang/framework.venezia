@@ -17,18 +17,27 @@ namespace _venezia
             typedef std::shared_ptr<Eigen::MatrixXd>  type_ptr_mt;
         public:
 
-        virtual bool empty()
+        virtual bool empty() const
         {
             if( !m_ptr_mt_data )
                 return true;
             else
                 return false;
         }
+        virtual void set_gradient(const c_var & v)
+        {
+            if( m_ptr_mt_grad ){
+                *m_ptr_mt_grad = v.get();
+            }
+            else{
+                m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(v.get()));
+            }
+        }
         virtual void set_gradient(const Eigen::MatrixXd & v)
         {
             m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(v));
         }
-        virtual void set_creator( void *p_creator)
+        virtual void set_creator( _venezia::_c_fun *p_creator)
         {
             m_p_creator = p_creator;
         }
@@ -63,14 +72,24 @@ namespace _venezia
         {
             m_ptr_mt_data=nullptr;
             m_ptr_mt_grad = nullptr;
+            m_b_error = false;
         }
+        c_var(bool b_error)
+        {
+            m_ptr_mt_data=nullptr;
+            m_ptr_mt_grad = nullptr;
+            m_b_error = b_error;
+        }
+
         c_var( int d )
         {
             m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(1,1));
             *m_ptr_mt_data << d;
+            m_b_error = false;
         }
         c_var( double d )
         {
+            m_b_error = false;
             m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(1,1));
             *m_ptr_mt_data << d;
         }
@@ -78,11 +97,13 @@ namespace _venezia
         c_var( const Eigen::MatrixXd & in )
         {
             m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(in));
+            m_b_error = false;
         }
 
         c_var(EIGEN_DEFAULT_DENSE_INDEX_TYPE n_row, EIGEN_DEFAULT_DENSE_INDEX_TYPE n_col)
         {
             m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
+            m_b_error = false;
         }
         c_var( const c_var& rhs )
         {
@@ -99,6 +120,8 @@ namespace _venezia
             if(rhs.m_ptr_mt_grad){
                 m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(*(rhs.m_ptr_mt_grad)));
             }
+
+            m_b_error = rhs.m_b_error;
             return *this;
         }
         ////////////////////////////
@@ -620,6 +643,16 @@ namespace _venezia
             return rhs;
         }
 
+        const Eigen::MatrixXd operator()()
+        {
+            if(m_ptr_mt_data){
+                return *m_ptr_mt_data;
+            }
+            else{
+                return Eigen::MatrixXd();
+            }
+
+        }
         // matirix multiplication
         c_var mul(const Eigen::MatrixXd &rhs)
         {
@@ -722,7 +755,7 @@ namespace _venezia
             if(m_ptr_mt_data)
                 return *m_ptr_mt_data;
             else
-                Eigen::MatrixXd();
+                return Eigen::MatrixXd();
         }
         c_var::type_size size() const
         {
@@ -743,9 +776,14 @@ namespace _venezia
                 return std::string();
             }
         }
+        bool error() const
+        {
+            return m_b_error;
+        }
         protected:
             c_var::type_ptr_mt m_ptr_mt_data,m_ptr_mt_grad;
-            void *m_p_creator = nullptr;
+            _venezia::_c_fun *m_p_creator = nullptr;
+            bool m_b_error;
 
     };
 }
