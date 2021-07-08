@@ -117,8 +117,14 @@ namespace _venezia
             if(rhs.m_ptr_mt_data){
                 m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(*(rhs.m_ptr_mt_data)));
             }
+            else{
+                m_ptr_mt_data.reset();
+            }
             if(rhs.m_ptr_mt_grad){
                 m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(*(rhs.m_ptr_mt_grad)));
+            }
+            else{
+                m_ptr_mt_grad.reset();
             }
 
             m_b_error = rhs.m_b_error;
@@ -731,23 +737,67 @@ namespace _venezia
 
         void set(size_t n_row, size_t n_col, int n_val)
         {
-            m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
-           (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            m_b_error = false;
+            if(m_ptr_mt_data){
+                if( m_ptr_mt_data->rows()>n_row && m_ptr_mt_data->cols() > n_col ){
+                    (*m_ptr_mt_data)(n_row,n_col) = n_val;
+                }
+                else{
+                    m_b_error = true;
+                }
+            }
+            else{
+                m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
+                (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            }
         }
         void set(size_t n_row, size_t n_col, long n_val)
         {
-            m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
-           (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            m_b_error = false;
+            if(m_ptr_mt_data){
+                if( m_ptr_mt_data->rows()>n_row && m_ptr_mt_data->cols() > n_col ){
+                    (*m_ptr_mt_data)(n_row,n_col) = n_val;
+                }
+                else{
+                    m_b_error = true;
+                }
+            }
+            else{
+                m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
+                (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            }
         }
         void set(size_t n_row, size_t n_col, float n_val)
         {
-           m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
-           (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            m_b_error = false;
+            if(m_ptr_mt_data){
+                if( m_ptr_mt_data->rows()>n_row && m_ptr_mt_data->cols() > n_col ){
+                    (*m_ptr_mt_data)(n_row,n_col) = n_val;
+                }
+                else{
+                    m_b_error = true;
+                }
+            }
+            else{
+                m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
+                (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            }
         }
         void set(size_t n_row, size_t n_col, double n_val)
         {
-           m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
-           (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            m_b_error = false;
+            if(m_ptr_mt_data){
+                if( m_ptr_mt_data->rows()>n_row && m_ptr_mt_data->cols() > n_col ){
+                    (*m_ptr_mt_data)(n_row,n_col) = n_val;
+                }
+                else{
+                    m_b_error = true;
+                }
+            }
+            else{
+                m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(n_row,n_col));
+                (*m_ptr_mt_data)(n_row,n_col) = n_val;
+            }
         }
 
         Eigen::MatrixXd get() const

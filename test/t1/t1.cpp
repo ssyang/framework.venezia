@@ -449,8 +449,7 @@ void _test_new1()
 
     //
     std::cout << std::endl;
-    std::cout << "x : " << std::endl;
-    std::cout << x.string() << std::endl;
+    std::cout << "x : " << x.string() << std::endl;
 
     _venezia::c_var a = A(x);
 
@@ -459,8 +458,7 @@ void _test_new1()
     //std::cout << A.string() << std::endl;
 
     std::cout << std::endl;
-    std::cout << "a : " << std::endl;
-    std::cout << a.string() << std::endl;
+    std::cout << "a : " << a.string() << std::endl;
     //
     _venezia::c_var b = B(a);
 
@@ -469,25 +467,24 @@ void _test_new1()
     //std::cout << B.string() << std::endl;
 
     //std::cout << std::endl;
-    std::cout << "b : " << std::endl;
-    std::cout << b.string() << std::endl;
+    std::cout << "b : " << b.string() << std::endl;
     //
     _venezia::c_var y = C(b);
     std::cout << std::endl;
     //std::cout << "C : " << std::endl;
     //std::cout << C.string() << std::endl;
 
-    //std::cout << std::endl;
-    std::cout << "y : " << std::endl;
-    std::cout << y.string() << std::endl;
-
     std::cout << "forward : "<< y.string() <<std::endl;
     //
     std::cout << "." <<std::endl;
-    y.set_gradient(_venezia::c_var(1).get());
+    y.set_gradient(_venezia::c_var(1));
     std::cout << ".." <<std::endl;
-    y.backword();
-    std::cout << "..." <<std::endl;
+    if( y.backword() ){
+        std::cout << "success" <<std::endl;
+    }
+    else{
+        std::cout << "fail" <<std::endl;
+    }
 
     /////////////////////////////////////////////////////////////
     /*
