@@ -68,15 +68,14 @@ class csqure : public _venezia::c_fun
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
         static _venezia::c_var y;
-        std::cout << "[csqure]";
         y = x*x;
         return y;
     }
     virtual const  _venezia::c_var &_default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
     {
         static _venezia::c_var gx;
-        std::cout << "=csqure=";
         gx = 2*x*gy;
+        std::cout << gx() << " = 2x" << x() << " x " << gy() <<std::endl;
         return gx;
     };
 };
@@ -88,7 +87,6 @@ class cexp : public _venezia::c_fun
     protected:
     virtual const _venezia::c_var& _default_forward(const _venezia::c_var & x)
     {
-        std::cout << "[cexp]";
         static _venezia::c_var y;
         y = x;
         _venezia::c_var::type_size mt_size(y.size());
@@ -100,18 +98,20 @@ class cexp : public _venezia::c_fun
         }
         return y;
     }
-    virtual _venezia::c_var &_default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
+    virtual const _venezia::c_var &_default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
     {
-        std::cout << "=cexp=";
         static _venezia::c_var gx;
         gx = gy;
         _venezia::c_var::type_size mt_size(gx.size());
-
+        double dy,df;
         for( size_t i = 0; i<mt_size.first; i++){
             for( size_t j = 0; j<mt_size.second; j++){
-                gx.set(i,j, exp(x.get()(i,j)) * gy.get()(i,j) );
+                dy = gy.get()(i,j);
+                df = exp(x.get()(i,j));
+                gx.set(i,j,  df*dy );
             }
         }
+        std::cout << gx() << " = exp(" << x() << ") x " << gy() <<std::endl;
         return gx;
     };
 
@@ -475,9 +475,10 @@ void _test_new1()
     //std::cout << C.string() << std::endl;
 
     std::cout << "forward : "<< y.string() <<std::endl;
-    //
+    
     std::cout << "." <<std::endl;
     y.set_gradient(_venezia::c_var(1));
+    
     std::cout << ".." <<std::endl;
     if( y.backword() ){
         std::cout << "success" <<std::endl;
@@ -485,13 +486,7 @@ void _test_new1()
     else{
         std::cout << "fail" <<std::endl;
     }
-
-    /////////////////////////////////////////////////////////////
-    /*
-    b.set_gradient(C.backword(y.get_gradient()));
-    a.set_gradient(B.backword(b.get_gradient()));
-    x.set_gradient(A.backword(a.get_gradient()));
-    */
+    
     _venezia::c_var out = x.get_gradient();
     std::cout << "backward : "<< out.string() <<std::endl;
     std::cout << "...." <<std::endl;

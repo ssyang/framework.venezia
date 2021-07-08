@@ -45,11 +45,13 @@ namespace _venezia
         {
             bool b_result(false);
             do{
-                if(m_p_creator==nullptr)
-                    continue;
                 if(!m_ptr_mt_data)
                     continue;
                 if(!m_ptr_mt_grad)
+                    continue;
+                //
+                b_result = true;
+                if(m_p_creator==nullptr)
                     continue;
                 //
                 b_result = m_p_creator->backword(*m_ptr_mt_grad);
@@ -59,8 +61,8 @@ namespace _venezia
 
         c_var get_gradient() const
         {
-            if(m_ptr_mt_data){
-                return c_var(*m_ptr_mt_data);
+            if(m_ptr_mt_grad){
+                return c_var(*m_ptr_mt_grad);
             }
             else{
                 return c_var();
@@ -128,6 +130,7 @@ namespace _venezia
             }
 
             m_b_error = rhs.m_b_error;
+            m_p_creator = rhs.m_p_creator;
             return *this;
         }
         ////////////////////////////
@@ -649,7 +652,7 @@ namespace _venezia
             return rhs;
         }
 
-        const Eigen::MatrixXd operator()()
+        const Eigen::MatrixXd operator()() const
         {
             if(m_ptr_mt_data){
                 return *m_ptr_mt_data;
