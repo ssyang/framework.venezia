@@ -17,12 +17,20 @@ namespace _venezia
             typedef std::shared_ptr<Eigen::MatrixXd>  type_ptr_mt;
         public:
 
-        virtual bool empty() const
+        virtual bool empty(bool b_gradient = false) const
         {
-            if( !m_ptr_mt_data )
-                return true;
-            else
-                return false;
+            if(b_gradient){
+                if( !m_ptr_mt_grad )
+                    return true;
+                else
+                    return false;
+            }
+            else{
+                if( !m_ptr_mt_data )
+                    return true;
+                else
+                    return false;
+            }
         }
         virtual void set_gradient(const c_var & v)
         {
@@ -818,15 +826,27 @@ namespace _venezia
                 return std::make_pair(0,0);
         }
 
-        std::string string()
+        std::string string(bool b_gradient = false)
         {
-            if(m_ptr_mt_data){
-                std::stringstream ss;
-                ss << *m_ptr_mt_data;
-                return ss.str();
+            std::stringstream ss;
+
+            if(b_gradient){
+                if(m_ptr_mt_grad){
+                    ss << *m_ptr_mt_grad;
+                    return ss.str();
+                }
+                else{
+                    return std::string();
+                }
             }
             else{
-                return std::string();
+                if(m_ptr_mt_data){
+                    ss << *m_ptr_mt_data;
+                    return ss.str();
+                }
+                else{
+                    return std::string();
+                }
             }
         }
         bool error() const

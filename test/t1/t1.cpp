@@ -33,6 +33,10 @@ class cunit : public _venezia::c_fun
         gx = 1;
         return gx;
     };
+    virtual void *_new_instance()
+    {
+        return new cunit();
+    }
 
 };
 
@@ -57,6 +61,10 @@ class cdouble : public _venezia::c_fun
         gx = 2*gy;
         return gx;
     };
+    virtual void *_new_instance()
+    {
+        return new cdouble();
+    }
 
 };
 
@@ -78,6 +86,11 @@ class csqure : public _venezia::c_fun
         std::cout << gx() << " = 2x" << x() << " x " << gy() <<std::endl;
         return gx;
     };
+    virtual void *_new_instance()
+    {
+        return new csqure();
+    }
+
 };
 
 class cexp : public _venezia::c_fun
@@ -114,6 +127,10 @@ class cexp : public _venezia::c_fun
         std::cout << gx() << " = exp(" << x() << ") x " << gy() <<std::endl;
         return gx;
     };
+    virtual void *_new_instance()
+    {
+        return new cexp();
+    }
 
 };
 
@@ -487,9 +504,19 @@ void _test_new1()
         std::cout << "fail" <<std::endl;
     }
     
-    _venezia::c_var out = x.get_gradient();
-    std::cout << "backward : "<< out.string() <<std::endl;
+    
     std::cout << "...." <<std::endl;
+
+    std::cout << " dy = " << y.string(true) <<std::endl;
+    std::cout << " db = " << b.string(true) <<std::endl;
+    std::cout << " da = " << a.string(true) <<std::endl;
+    std::cout << " dx = " << x.string(true) <<std::endl;
+
+    std::cout << " y = " << y.string() <<std::endl;
+    std::cout << " b = " << b.string() <<std::endl;
+    std::cout << " a = " << a.string() <<std::endl;
+    std::cout << " x = " << x.string() <<std::endl;
+
 }
 
 int main()
