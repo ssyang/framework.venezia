@@ -16,6 +16,7 @@ class cunit : public _venezia::c_fun
 {
     public:
     using _venezia::c_fun::operator();
+    using _venezia::c_fun::operator=;
     protected:
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
@@ -44,6 +45,7 @@ class cdouble : public _venezia::c_fun
 {
     public:
     using _venezia::c_fun::operator();
+    using _venezia::c_fun::operator=;
     protected:
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
@@ -72,6 +74,7 @@ class csqure : public _venezia::c_fun
 {
     public:
     using _venezia::c_fun::operator();
+    using _venezia::c_fun::operator=;
     protected:
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
@@ -97,6 +100,7 @@ class cexp : public _venezia::c_fun
 {
     public:
     using _venezia::c_fun::operator();
+    using _venezia::c_fun::operator=;
     protected:
     virtual const _venezia::c_var& _default_forward(const _venezia::c_var & x)
     {
@@ -250,11 +254,11 @@ void _test_numerical_differentiation()
         std::cout << b() <<std::endl;
     }
     //
-   _venezia::c_var diff = _venezia::numerical_differentiation<csqure>(fun_squre,a);
+   _venezia::c_var diff = _venezia::numerical_differentiation(fun_squre,a);
     std::cout <<" numerical_differentiation " << std::endl;
     std::cout << diff() << std::endl;
 }
-/*
+
 void _test_composite_function()
 {
     cdouble F[7];
@@ -264,13 +268,8 @@ void _test_composite_function()
     k << 2;
     _venezia::c_var kv(k),kv_result;
     //+++++++++++++++++++++++++++++++++++++++++++++
-    //G1 = F1();
-    std::cout << std::endl;
 
-    //G2 = G1(F1());
-    std::cout << std::endl;
-
-    G4 = G3(G2(G1(F[0]())));
+    G4 = G3( G2( G1( (F[0])() ) ) );
     std::cout << std::endl;
     std::cout << "G4 info : " << G4.string() << std::endl;
     std::cout << "G3 info : " << G3.string() << std::endl;
@@ -292,10 +291,10 @@ void _test_composite_function()
     kv_result = G4(kv);
     std::cout << "G4 = " <<kv_result.get() << std::endl;
 
-    G1 = F[0]();std::cout << std::endl;
-    G2 = G1();std::cout << std::endl;
-    G3 = G2();std::cout << std::endl;
-    G4 = G3();std::cout << std::endl;
+    G1 = F[0]();
+    G2 = G1();
+    G3 = G2();
+    G4 = G3();
 
     kv_result = G1(kv);
     std::cout << "G1 = " <<kv_result.get() << std::endl;
@@ -312,11 +311,16 @@ void _test_composite_function()
     F[3] = F[2](F[1](F[0]()));
     std::cout << std::endl;
     kv_result = F[3](kv);
-    std::cout << "F[3] = " <<kv_result.get() << std::endl;
+    if(kv_result.error()){
+        std::cout << "F[3] = " << "error" << std::endl;
+    }
+    else{
+        std::cout << "F[3] = " <<kv_result.get() << std::endl;
+    }
 
     csqure FS[4];
     cexp B;
-    _venezia::c_function composite_f;
+    cunit composite_f;
     composite_f = FS[2](FS[1](FS[0]()));
 
     kv_result = composite_f(kv);
@@ -332,7 +336,7 @@ void _test_composite_function()
     std::cout << dy() << std::endl;
     
 }
-*/
+
 
 void _test_backword()
 {

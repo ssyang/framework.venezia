@@ -853,6 +853,10 @@ namespace _venezia
         {
             return m_b_error;
         }
+        void set_error(bool b_error)
+        {
+            m_b_error = b_error;
+        }
         protected:
             c_var::type_ptr_mt m_ptr_mt_data,m_ptr_mt_grad;
             _venezia::_c_fun *m_p_creator = nullptr;

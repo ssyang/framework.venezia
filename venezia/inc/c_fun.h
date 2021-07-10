@@ -20,44 +20,70 @@ namespace _venezia
         public:
             typedef std::shared_ptr<c_fun>  type_ptr;
             typedef std::list<c_fun::type_ptr>  type_list_ptr;
-
+            typedef std::shared_ptr<c_fun::type_list_ptr>  type_ptr_list_ptr;
         public:
-            _venezia::c_fun::type_list_ptr operator()(_venezia::c_fun::type_list_ptr & list_ptr)
+            const _venezia::c_fun::type_ptr_list_ptr operator()(const _venezia::c_fun::type_ptr_list_ptr & ptr_list_ptr)
             {
+                c_fun::type_ptr_list_ptr ptr_tmp(ptr_list_ptr);
+                if(!ptr_tmp){
+                    ptr_tmp = c_fun::type_ptr_list_ptr(new c_fun::type_list_ptr());
+                }
                 if(m_list_ptr_overload.empty()){
-                    list_ptr.push_back(c_fun::type_ptr((c_fun*)_new_instance()));
-                    return c_fun::type_list_ptr();
+                    ptr_tmp->push_back(c_fun::type_ptr((c_fun*)_new_instance()));
                 }
                 else{
-                    std::copy(m_list_ptr_overload.begin(),m_list_ptr_overload.end(),std::back_inserter(list_ptr));
-                    return list_ptr;
+                    std::copy(m_list_ptr_overload.begin(),m_list_ptr_overload.end(),std::back_inserter(*ptr_tmp));
                 }
+                return ptr_tmp;
             }
 
-            _venezia::c_fun::type_list_ptr operator()()
+            _venezia::c_fun::type_ptr_list_ptr operator()()
             {
+                c_fun::type_ptr_list_ptr  ptr_list_ol(new c_fun::type_list_ptr());
                 if(m_list_ptr_overload.empty()){
-                    c_fun::type_list_ptr list_ol;
-                    list_ol.push_back(c_fun::type_ptr((c_fun*)_new_instance()));
-                    return c_fun::type_list_ptr();
+                    ptr_list_ol->push_back(c_fun::type_ptr((c_fun*)_new_instance()));
                 }
                 else{
-                    return m_list_ptr_overload;
+                    *ptr_list_ol = m_list_ptr_overload;
                 }
+                return ptr_list_ol;
             }
 
             _venezia::c_var operator()(const _venezia::c_var & in)
             {
+                m_y.set_error(false);
+
                 if(in.empty()){
                     _venezia::c_var y(true);
                     return y;//error case
                 }
                 else{
                     m_x = in;
-                    m_y = _default_forward(in);
+
+                    if(m_list_ptr_overload.empty()){
+                        m_y = _default_forward(in);
+                    }
+                    else{
+                        _venezia::c_var tmp(in);
+                        for( auto ptr_item : m_list_ptr_overload){
+                            if(ptr_item){
+                                tmp = (*ptr_item)(tmp);
+                                if(tmp.error()){
+                                    break;
+                                }
+                            }
+                        }//end for
+                        m_y = tmp;
+                    }
                     m_y.set_creator(this);
                     return m_y;
                 }
+            }
+            _venezia::c_fun& operator=(const _venezia::c_fun::type_ptr_list_ptr & ptr_list_ptr)
+            {
+                if(ptr_list_ptr)
+                    m_list_ptr_overload = *ptr_list_ptr;
+                return *this;
             }
 
             virtual bool backword(const Eigen::MatrixXd & mt_dy)
