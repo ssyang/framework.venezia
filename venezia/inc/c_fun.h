@@ -22,6 +22,23 @@ namespace _venezia
             typedef std::list<c_fun::type_ptr>  type_list_ptr;
             typedef std::shared_ptr<c_fun::type_list_ptr>  type_ptr_list_ptr;
         public:
+            c_fun(){}
+            virtual ~c_fun(){}
+
+            c_fun( const c_fun & src)
+            {
+                m_x =src.m_x;
+                m_y =src.m_y;
+                m_list_ptr_overload = src.m_list_ptr_overload;
+            }
+            c_fun( const c_fun::type_ptr_list_ptr & ptr_list_ptr)
+            {
+                if(ptr_list_ptr){
+                    m_list_ptr_overload = *ptr_list_ptr;
+                }
+            }
+
+
             const _venezia::c_fun::type_ptr_list_ptr operator()(const _venezia::c_fun::type_ptr_list_ptr & ptr_list_ptr)
             {
                 c_fun::type_ptr_list_ptr ptr_tmp(ptr_list_ptr);
@@ -79,6 +96,7 @@ namespace _venezia
                     return m_y;
                 }
             }
+
             _venezia::c_fun& operator=(const _venezia::c_fun::type_ptr_list_ptr & ptr_list_ptr)
             {
                 if(ptr_list_ptr)
@@ -86,21 +104,33 @@ namespace _venezia
                 return *this;
             }
 
-            virtual bool backword(const Eigen::MatrixXd & mt_dy)
+            virtual bool backword(void *p_dy)
             {
                 bool b_result(false);
                 do{
                     if( m_x.empty() ){
                         continue;
                     }
-                    _venezia::c_var dy(mt_dy);
-                    _venezia::c_var dx = _default_backward(dy,m_x);
+                    if(p_dy==nullptr){
+                        continue;
+                    }
+                    _venezia::c_var *p_cvar_dy((_venezia::c_var*)p_dy);
+                    _venezia::c_var dx = _default_backward(*p_cvar_dy,m_x);
                     m_x.set_gradient(dx);
                     b_result = m_x.backword();
+                    std::cout << "(" << m_x.string(true) << ")";
                 }while(false);
                 return b_result;
             }
 
+            c_var::type_size get_size_of_input()
+            {
+                c_var::type_size result(0,0);
+                if( !m_x.empty() ){
+                    result = m_x.size();
+                }
+                return result;
+            }
             std::string string(bool b_insert_enter=false)
             {
                 std::string s_info;

@@ -34,12 +34,7 @@ namespace _venezia
         }
         virtual void set_gradient(const c_var & v)
         {
-            if( m_ptr_mt_grad ){
-                *m_ptr_mt_grad = v.get();
-            }
-            else{
-                m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(v.get()));
-            }
+            m_ptr_mt_grad = c_var::type_ptr_mt(new Eigen::MatrixXd(v.get()));
         }
         virtual void set_gradient(const Eigen::MatrixXd & v)
         {
@@ -55,14 +50,24 @@ namespace _venezia
             do{
                 if(!m_ptr_mt_data)
                     continue;
-                if(!m_ptr_mt_grad)
-                    continue;
                 //
                 b_result = true;
                 if(m_p_creator==nullptr)
                     continue;
                 //
-                b_result = m_p_creator->backword(*m_ptr_mt_grad);
+                c_var::type_size size_in = m_p_creator->get_size_of_input();
+                if(size_in.first == 0 && size_in.second == 0){
+                    continue;
+                }
+                if(!m_ptr_mt_grad){
+                    m_ptr_mt_grad = c_var::type_ptr_mt(
+                        new Eigen::MatrixXd(size_in.first,size_in.second)
+                        );
+                    m_ptr_mt_grad->fill(1);
+                }
+
+                c_var grad(*m_ptr_mt_grad);
+                b_result = m_p_creator->backword((void *)&grad);
             }while(false);
             return b_result;
         }
@@ -80,14 +85,18 @@ namespace _venezia
         public:
         c_var()
         {
-            m_ptr_mt_data=nullptr;
-            m_ptr_mt_grad = nullptr;
-            m_b_error = false;
+            _ini();
         }
+
+        c_var( const std::string & s_name)
+        {
+            _ini();
+            m_s_name_for_debug = s_name;
+        }
+
         c_var(bool b_error)
         {
-            m_ptr_mt_data=nullptr;
-            m_ptr_mt_grad = nullptr;
+            _ini();
             m_b_error = b_error;
         }
 
@@ -733,14 +742,6 @@ namespace _venezia
         }
 
         ///////////////////////////
-        bool empty_gradient()
-        {
-            if( !m_ptr_mt_grad )
-                return true;
-            else
-                return false;
-        }
-
         void set(const Eigen::MatrixXd & data)
         {
             m_ptr_mt_data = c_var::type_ptr_mt(new Eigen::MatrixXd(data));
@@ -857,10 +858,24 @@ namespace _venezia
         {
             m_b_error = b_error;
         }
+        void set_name( const std::string & s_name)
+        {
+            m_s_name_for_debug = s_name;
+        }
+
+        protected:
+        void _ini()
+        {
+            m_ptr_mt_data=nullptr;
+            m_ptr_mt_grad = nullptr;
+            m_b_error = false;
+        }
+
         protected:
             c_var::type_ptr_mt m_ptr_mt_data,m_ptr_mt_grad;
             _venezia::_c_fun *m_p_creator = nullptr;
             bool m_b_error;
+            std::string m_s_name_for_debug;
 
     };
 }

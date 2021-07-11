@@ -17,6 +17,10 @@ class cunit : public _venezia::c_fun
     public:
     using _venezia::c_fun::operator();
     using _venezia::c_fun::operator=;
+    public:
+    cunit(){}
+    cunit( const _venezia::c_fun::type_ptr_list_ptr & ptr_list_ptr){}
+
     protected:
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
@@ -463,42 +467,31 @@ void _test_cpp()
 
 void _test_new1()
 {
+    std::cout << "======================" <<std::endl;
+    std::cout << "   test _test_new1." <<std::endl;
+    std::cout << "======================" <<std::endl;
+
     csqure A,C;
     cexp B;
 
     _venezia::c_var x(0.5);
-
-    //
-    std::cout << std::endl;
     std::cout << "x : " << x.string() << std::endl;
 
     _venezia::c_var a = A(x);
-
-    //std::cout << std::endl;
-    //std::cout << "A : " << std::endl;
-    //std::cout << A.string() << std::endl;
 
     std::cout << std::endl;
     std::cout << "a : " << a.string() << std::endl;
     //
     _venezia::c_var b = B(a);
-
-    //std::cout << std::endl;
-    //std::cout << "B : " << std::endl;
-    //std::cout << B.string() << std::endl;
-
-    //std::cout << std::endl;
     std::cout << "b : " << b.string() << std::endl;
     //
     _venezia::c_var y = C(b);
-    std::cout << std::endl;
-    //std::cout << "C : " << std::endl;
-    //std::cout << C.string() << std::endl;
+
 
     std::cout << "forward : "<< y.string() <<std::endl;
     
     std::cout << "." <<std::endl;
-    y.set_gradient(_venezia::c_var(1));
+    //y.set_gradient(_venezia::c_var(1));
     
     std::cout << ".." <<std::endl;
     if( y.backword() ){
@@ -520,9 +513,45 @@ void _test_new1()
     std::cout << " b = " << b.string() <<std::endl;
     std::cout << " a = " << a.string() <<std::endl;
     std::cout << " x = " << x.string() <<std::endl;
+}
+void _test_new2()
+{
+    std::cout << "======================" <<std::endl;
+    std::cout << "   test _test_new2." <<std::endl;
+    std::cout << "======================" <<std::endl;
+
+    csqure A,C;
+    cexp B;
+
+    _venezia::c_var x(0.5);
+    _venezia::c_var y = C(B(A(x)));
+
+
+    std::cout << "forward : "<< y.string() <<std::endl;
+    
+    std::cout << "." <<std::endl;
+    if( y.backword() ){
+        std::cout << "success" <<std::endl;
+    }
+    else{
+        std::cout << "fail" <<std::endl;
+    }
+    
+    
+    std::cout << "...." <<std::endl;
+
+    std::cout << " dy = " << y.string(true) <<std::endl;
+    std::cout << " dx = " << x.string(true) <<std::endl;
+
+    std::cout << " y = " << y.string() <<std::endl;
+    std::cout << " x = " << x.string() <<std::endl;
+
+    cunit D(C(B(A())));
+    y= _venezia::numerical_differentiation(D,x);
+    std::cout << " y = " << y.string() <<std::endl;
+    std::cout << " x = " << x.string() <<std::endl;
 
 }
-
 int main()
 {
 
@@ -534,6 +563,7 @@ int main()
     //_test_composite_function();
     //_test_backword();
     //_test_cpp();
-    _test_new1();
+    //_test_new1();
+    _test_new2();
     return 0;
 }
