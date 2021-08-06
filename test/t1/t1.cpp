@@ -25,16 +25,12 @@ class cunit : public _venezia::c_fun
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
         static _venezia::c_var y;
-        std::cout << "[cunit]";
-
         y = x;
         return y;
     }
     virtual const  _venezia::c_var& _default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
     {
         static _venezia::c_var gx;
-        std::cout << "=cunit=";
-
         gx = 1;
         return gx;
     };
@@ -54,16 +50,12 @@ class cdouble : public _venezia::c_fun
     virtual const  _venezia::c_var &_default_forward(const _venezia::c_var & x)
     {
         static _venezia::c_var y;
-        std::cout << "[CDouble]";
-
         y = 2*x;
         return y;
     }
     virtual const  _venezia::c_var& _default_backward(const _venezia::c_var  & gy,const _venezia::c_var  & x)
     {
         static _venezia::c_var gx;
-        std::cout << "=CDouble=";
-
         gx = 2*gy;
         return gx;
     };
@@ -90,7 +82,6 @@ class csqure : public _venezia::c_fun
     {
         static _venezia::c_var gx;
         gx = 2*x*gy;
-        std::cout << gx() << " = 2x" << x() << " x " << gy() <<std::endl;
         return gx;
     };
     virtual void *_new_instance()
@@ -132,7 +123,6 @@ class cexp : public _venezia::c_fun
                 gx.set(i,j,  df*dy );
             }
         }
-        std::cout << gx() << " = exp(" << x() << ") x " << gy() <<std::endl;
         return gx;
     };
     virtual void *_new_instance()
@@ -521,9 +511,9 @@ void _test_new2()
     std::cout << "======================" <<std::endl;
 
     csqure A,C;
-    cexp B;
+    cdouble B;
 
-    _venezia::c_var x(0.5);
+    _venezia::c_var x(4);
     _venezia::c_var y = C(B(A(x)));
 
 
@@ -547,6 +537,8 @@ void _test_new2()
     std::cout << " x = " << x.string() <<std::endl;
 
     cunit D(C(B(A())));
+    y = D(x);
+    std::cout << " y = " << y.string() <<std::endl;
     y= _venezia::numerical_differentiation(D,x);
     std::cout << " y = " << y.string() <<std::endl;
     std::cout << " x = " << x.string() <<std::endl;
